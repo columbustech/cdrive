@@ -2,7 +2,7 @@
 
 ## Introduction
 
-## Quickstart: CDrive in 30 secs
+## Quickstart: CDrive in 3 mins
 
 [![Alt text](https://img.youtube.com/vi/uMvqmm-u42Y/0.jpg)](https://www.youtube.com/watch?v=uMvqmm-u42Y)
 
