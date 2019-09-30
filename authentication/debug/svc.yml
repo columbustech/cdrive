@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: authentication
+spec:
+  selector:
+    name: authentication
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

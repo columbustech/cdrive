@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdrive
+spec:
+  selector:
+    matchLabels:
+      name: cdrive
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: cdrive
+    spec:
+      containers:
+        - name: cdrive
+          image: "docker.io/kaushikc92/cdrive:latest"
+          stdin: true
+          tty: true
+          ports:
+            - name: http
+              containerPort: 8000
+          volumeMounts:
+            - mountPath: /code/data
+              name: cdrive-data
+          envFrom:
+            - configMapRef:
+                name: cdrive-env
+      volumes:
+        - name: cdrive-data
+          persistentVolumeClaim:
+            claimName: cdrive

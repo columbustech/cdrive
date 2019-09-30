@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cdrive-env
+data:
+  AWS_ACCESS_KEY_ID: <key_id>
+  AWS_SECRET_ACCESS_KEY: <secret>
+  AWS_STORAGE_BUCKET_NAME: <bucket_name>
+  COLUMBUS_CLIENT_ID: <client_id>
+  COLUMBUS_CLIENT_SECRET: <client_secret>

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication
+spec:
+  selector:
+    matchLabels:
+      name: authentication
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: authentication
+    spec:
+      containers:
+        - name: authentication
+          image: "docker.io/columbustech/authentication:latest"
+          stdin: true
+          tty: true
+          ports:
+            - name: http
+              containerPort: 8000
+          volumeMounts:
+            - mountPath: /code/data
+              name: authentication-data
+          envFrom:
+            - configMapRef:
+                name: authentication-env
+      volumes:
+        - name: authentication-data
+          persistentVolumeClaim:
+            claimName: authentication-pv-claim

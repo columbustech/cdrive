@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdrive-ui
+spec:
+  selector:
+    matchLabels:
+      name: cdrive-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: cdrive-ui
+    spec:
+      containers:
+        - name: cdrive-ui
+          image: "docker.io/kaushikc92/cdrive-ui:latest"

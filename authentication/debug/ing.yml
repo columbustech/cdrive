@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: authentication
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: “true”
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  rules:
+  - host: authentication.columbusecosystem.com
+    http:
+      paths: 
+      - path: /
+        backend:
+          serviceName: authentication
+          servicePort: 8000
+  tls:
+  - secretName: tls-staging-cert
+    hosts:
+    - authentication.columbusecosystem.com
