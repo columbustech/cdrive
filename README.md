@@ -10,7 +10,7 @@ Features:
 2. Columbus allows users to install custom containerized applications from dockerhub.
 3. Columbus allows users to create custom containerized applications by composing other applications.
 
-For further details, visit our [homepage](columbustech.io).
+For further details, visit our [homepage](https://columbustech.io).
 
 ## Quickstart: CDrive in 3 mins
 
@@ -18,7 +18,7 @@ For further details, visit our [homepage](columbustech.io).
 
 ## App Store
 
-Our [app store page](columbustech.io/appstore) contains detailed information about currently available apps as well as upcoming ones.  
+Our [app store page](https://columbustech.io/appstore) contains detailed information about currently available apps as well as upcoming ones.  
 
 ## The Team
 
