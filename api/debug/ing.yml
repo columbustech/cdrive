@@ -16,7 +16,7 @@ spec:
           serviceName: cdrive 
           servicePort: 8000
   tls:
-  - secretName: tls-staging-cert
+  - secretName: tls-prod-cert
     hosts:
     - api.cdrive.columbusecosystem.com
 

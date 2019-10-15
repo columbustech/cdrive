@@ -39,12 +39,15 @@ class RegisterUserView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ClientIdView(APIView):
+class ClientDetailsView(APIView):
     parser_class = (JSONParser,)
 
     @csrf_exempt
     def get(self, request, format=None):
-        data = {'client_id': settings.COLUMBUS_CLIENT_ID}
+        data = {
+            'client_id': settings.COLUMBUS_CLIENT_ID,
+            'auth_url': setting.AUTHENTICATION_URL
+        }
         return Response(data, status=status.HTTP_200_OK)
 
 class AuthenticationTokenView(APIView):

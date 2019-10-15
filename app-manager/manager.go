@@ -13,6 +13,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -164,6 +165,14 @@ func startApp(imagePath string, username string, appName string, clientId string
 									Name:  "COLUMBUS_CLIENT_SECRET",
 									Value: clientSecret,
 								},
+								{
+									Name:  "CDRIVE_URL",
+									Value: os.Getenv("CDRIVE_URL"),
+								},
+								{
+									Name:  "AUTHENTICATION_URL",
+									Value: os.Getenv("AUTH_URL"),
+								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{
 								{
@@ -236,7 +245,7 @@ func startApp(imagePath string, username string, appName string, clientId string
 		Spec: extensions.IngressSpec{
 			Rules: []extensions.IngressRule{
 				{
-					Host: "cdrive.columbusecosystem.com",
+					Host: os.Getenv("CDRIVE_DOMAIN"),
 					IngressRuleValue: extensions.IngressRuleValue{
 						HTTP: &extensions.HTTPIngressRuleValue{
 							Paths: []extensions.HTTPIngressPath{
@@ -255,9 +264,9 @@ func startApp(imagePath string, username string, appName string, clientId string
 			TLS: []extensions.IngressTLS{
 				{
 					Hosts: []string{
-						"cdrive.columbusecosystem.com",
+						os.Getenv("CDRIVE_DOMAIN"),
 					},
-					SecretName: "tls-staging-cert",
+					SecretName: "tls-prod-cert",
 				},
 			},
 		},

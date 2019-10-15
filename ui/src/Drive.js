@@ -6,7 +6,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropzone from 'react-dropzone';
 import { FaFile, FaFolder, FaFolderPlus } from 'react-icons/fa';
-import { cdriveApiUrl } from './GlobalVariables';
 import ShareModal from './ShareModal';
 import NewFolderModal from './NewFolderModal';
 import './Drive.css';
@@ -42,7 +41,7 @@ class Drive extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}list/?path=${path}`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/list/?path=" + path,
       headers: {'Authorization': auth_header}
     });
     request.then(
@@ -72,7 +71,7 @@ class Drive extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}upload/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/upload/",
       data: data,
       headers: {'Authorization': auth_header}
     });
@@ -92,7 +91,7 @@ class Drive extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     var request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}initiate-chunked-upload/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/initiate-chunked-upload/",
       data: data,
       headers: {'Authorization': auth_header}
     });
@@ -119,7 +118,7 @@ class Drive extends React.Component {
 
             axios({
               method: 'POST',
-              url: `${cdriveApiUrl}upload-chunk/`,
+              url: window.location.protocol + "//api." + window.location.hostname + "/upload-chunk/",
               data: data,
               headers: {'Authorization': auth_header}
             }).then(
@@ -135,7 +134,7 @@ class Drive extends React.Component {
 
                   axios({
                     method: 'POST',
-                    url: `${cdriveApiUrl}complete-chunked-upload/`,
+                    url: window.location.protocol + "//api." + window.location.hostname + "/complete-chunked-upload/",
                     data: data,
                     headers: {'Authorization': auth_header}
                   }).then(
@@ -174,7 +173,7 @@ class Drive extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'DELETE',
-      url: `${cdriveApiUrl}delete/?path=${newPath}`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/delete/?path=" + newPath,
       headers: {'Authorization': auth_header}
     });
     request.then(
@@ -191,7 +190,7 @@ class Drive extends React.Component {
     let auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}download/?path=${filePath}`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/download/?path=" + filePath,
       headers: {'Authorization': auth_header}
     });
     request.then(

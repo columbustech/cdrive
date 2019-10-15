@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import { cdriveApiUrl } from './GlobalVariables';
 
 class NewFolderModal extends React.Component {
   constructor(props){
@@ -24,7 +23,7 @@ class NewFolderModal extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}create/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/create/",
       data: data,
       headers: {'Authorization': auth_header}
     });

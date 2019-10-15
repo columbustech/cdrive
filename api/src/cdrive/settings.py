@@ -139,4 +139,6 @@ COLUMBUS_CLIENT_SECRET = os.environ['COLUMBUS_CLIENT_SECRET']
 
 STATIC_URL = '/static/'
 
-APPS_ROOT = 'https://cdrive.columbusecosystem.com/app/'
+APPS_ROOT = os.environ['CDRIVE_URL'] + 'app/'
+
+AUTHENTICATION_URL = os.environ['AUTHENTICATION_URL']

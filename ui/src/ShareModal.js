@@ -3,7 +3,6 @@ import { Modal, Button } from 'react-bootstrap';
 import { FaFile, FaFolder } from 'react-icons/fa';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import { cdriveApiUrl } from './GlobalVariables';
 
 class ShareModal extends React.Component {
   constructor(props){
@@ -38,7 +37,7 @@ class ShareModal extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}share/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/share/",
       data: data,
       headers: {'Authorization': auth_header}
     });

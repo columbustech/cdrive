@@ -3,7 +3,6 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { authenticationUrl, cdriveApiUrl, cdriveUrl } from './GlobalVariables';
 import Drive from './Drive';
 import Applications from './Applications';
 import Hosted from './Hosted';
@@ -33,7 +32,7 @@ class App extends React.Component {
     this.state = {
       username: '',
       fullname: '',
-      activeTabIndex: 0,
+      activeTabIndex: 0
     };
     
     this.handleTabClick = this.handleTabClick.bind(this);
@@ -52,14 +51,15 @@ class App extends React.Component {
     if (code == null) {
       const request = axios({
         method: 'GET',
-        url: `${cdriveApiUrl}client-id/`
+        url: window.location.protocol + "//api." + window.location.hostname + "/client-details/" 
       });
       request.then(
         response => {
           var client_id = response.data.client_id;
-          var redirect_uri = `${cdriveUrl}`;
+          var auth_url = response.data.auth_url;
+          var redirect_uri = window.location.protocol + "//api." + window.location.hostname + "/";
           const link = document.createElement('a');
-          link.href = `${authenticationUrl}o/authorize/?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=1234xyz`;
+          link.href = `${auth_url}o/authorize/?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=1234xyz`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -68,10 +68,10 @@ class App extends React.Component {
     } else {
       const request = axios({
         method: 'POST',
-        url: `${cdriveApiUrl}authentication-token/`,
+        url: window.location.protocol + "//api." + window.location.hostname + "/authentication-token/",
         data: {
           code: code,
-          redirect_uri: `${cdriveUrl}`
+          redirect_uri: `${this.state.cdriveUrl}`
         }
       });
       request.then(
@@ -89,7 +89,7 @@ class App extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}user-details/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/user-details/",
       headers: {'Authorization': auth_header}
     });
     request.then(
@@ -113,23 +113,32 @@ class App extends React.Component {
     const cookies = new Cookies();
     let auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
-      method: 'POST',
-      url: `${cdriveApiUrl}stop-applications/`,
-      headers: {'Authorization': auth_header}
+      method: 'GET',
+      url: window.location.protocol + "//api." + window.location.hostname + "/client-details/" 
     });
     request.then(
       response => {
-        axios({
+        var auth_url = response.data.auth_url;
+        const req = axios({
           method: 'POST',
-          url: `${cdriveApiUrl}logout/`,
+          url: window.location.protocol + "//api." + window.location.hostname + "/stop-applications/",
           headers: {'Authorization': auth_header}
         });
-        cookies.remove('columbus_token');
-        var logoutUrl = `${authenticationUrl}accounts/logout/`;
-        window.location.href = logoutUrl;
+        req.then(
+          resp => {
+            axios({
+              method: 'POST',
+              url: window.location.protocol + "//api." + window.location.hostname + "/logout/",
+              headers: {'Authorization': auth_header}
+            });
+            cookies.remove('columbus_token');
+            var logoutUrl = auth_url + "accounts/logout/";
+            window.location.href = logoutUrl;
+          },
+          err => {
+          }
+        );
       },
-      err => {
-      }
     );
   }
   render() {

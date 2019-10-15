@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { Modal, Button } from 'react-bootstrap';
-import { cdriveApiUrl, applicationsUrl } from './GlobalVariables';
 
 class InstallAppModal extends React.Component {
   constructor(props){
@@ -32,7 +31,7 @@ class InstallAppModal extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}install-application/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/install-application/",
       data: data,
       headers: {'Authorization': auth_header}
     });
@@ -47,7 +46,7 @@ class InstallAppModal extends React.Component {
   installAppPoll(appName) {
     const request = axios({
       method: 'GET',
-      url: `${applicationsUrl}${this.props.username}/${appName}/`,
+      url: window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName + "/"
     });
     request.then(
         response => {

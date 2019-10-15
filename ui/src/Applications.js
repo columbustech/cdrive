@@ -3,7 +3,6 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import Table from 'react-bootstrap/Table';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
-import { cdriveApiUrl, applicationsUrl } from './GlobalVariables';
 import InstallAppModal from './InstallAppModal';
 import './Drive.css';
 import './Applications.css';
@@ -30,7 +29,7 @@ class AppItem extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}start-application/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/start-application/",
       data: data,
       headers: {'Authorization': auth_header}
     });
@@ -47,7 +46,7 @@ class AppItem extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}app-status/?app_name=${this.props.appName}/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/app-status/?app_name=" + this.props.appName,
       headers: {'Authorization': auth_header}
     });
     request.then(
@@ -57,7 +56,7 @@ class AppItem extends React.Component {
             this.setState({
               isOpening: false
             });
-            window.location.href = `${applicationsUrl}${this.props.username}/${this.props.appName}/`
+            window.location.href = window.location.protocol + "//api." + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName;
           }
         },
         err => {
@@ -111,7 +110,7 @@ class Applications extends React.Component {
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}applications-list/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/applications-list/",
       headers: {'Authorization': auth_header}
     });
     request.then(
@@ -127,7 +126,7 @@ class Applications extends React.Component {
     let auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'POST',
-      url: `${cdriveApiUrl}delete-application/`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/delete-application/",
       data: data,
       headers: {'Authorization': auth_header}
     });

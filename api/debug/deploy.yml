@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cdrive
-          image: "docker.io/kaushikc92/cdrive:latest"
+          image: "docker.io/columbustech/cdrive:latest"
           stdin: true
           tty: true
           ports:

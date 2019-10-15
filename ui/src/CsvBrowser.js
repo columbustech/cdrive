@@ -1,8 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import { CsvToHtmlTable } from 'react-csv-to-table';
-import { cdriveApiUrl } from './GlobalVariables';
 
 class CsvBrowser extends React.Component {
   constructor(props) {
@@ -22,7 +20,7 @@ class CsvBrowser extends React.Component {
     });
     const request = axios({
       method: 'GET',
-      url: `${cdriveApiUrl}json-content/?path=${path}`,
+      url: window.location.protocol + "//api." + window.location.hostname + "/json-content/?path=" + path,
       headers: {'Authorization': auth_header}
     });
     request.then(

@@ -4,6 +4,7 @@ metadata:
   name: authentication
   annotations:
     kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: “true”
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
 spec:
@@ -16,6 +17,8 @@ spec:
           serviceName: authentication
           servicePort: 8000
   tls:
-  - secretName: tls-staging-cert
+  - secretName: tls-prod-cert
     hosts:
     - authentication.columbusecosystem.com
+    - cdrive.columbusecosystem.com
+    - api.cdrive.columbusecosystem.com

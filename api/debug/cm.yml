@@ -8,3 +8,5 @@ data:
   AWS_STORAGE_BUCKET_NAME: <bucket_name>
   COLUMBUS_CLIENT_ID: <client_id>
   COLUMBUS_CLIENT_SECRET: <client_secret>
+  CDRIVE_URL: <cdrive_url> 
+  AUTHENTICATION_URL: <auth_url>

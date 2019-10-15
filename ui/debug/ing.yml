@@ -15,6 +15,6 @@ spec:
           serviceName: cdrive-ui
           servicePort: 3000
   tls:
-  - secretName: tls-staging-cert
+  - secretName: tls-prod-cert
     hosts:
     - cdrive.columbusecosystem.com
