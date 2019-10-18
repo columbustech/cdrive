@@ -57,7 +57,7 @@ class App extends React.Component {
         response => {
           var client_id = response.data.client_id;
           var auth_url = response.data.auth_url;
-          var redirect_uri = window.location.protocol + "//api." + window.location.hostname + "/";
+          var redirect_uri = window.location.protocol + "//" + window.location.hostname + "/";
           const link = document.createElement('a');
           link.href = `${auth_url}o/authorize/?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=1234xyz`;
           document.body.appendChild(link);
@@ -71,7 +71,7 @@ class App extends React.Component {
         url: window.location.protocol + "//api." + window.location.hostname + "/authentication-token/",
         data: {
           code: code,
-          redirect_uri: `${this.state.cdriveUrl}`
+          redirect_uri: window.location.protocol + "//" + window.location.hostname + "/"
         }
       });
       request.then(

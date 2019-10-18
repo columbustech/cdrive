@@ -1,5 +1,6 @@
-from .models import CDriveFolder, CDriveFile, FolderPermission, FilePermission
+from .models import CDriveFolder, CDriveFile, FolderPermission, FilePermission, HostedServiceFolderPermission, HostedServiceFolderPermission
 from apps_api.models import CDriveApplication
+from services_api.models import HostedService
 from django.conf import settings
 
 def get_object_by_path(path):
@@ -30,18 +31,38 @@ def initialize_user_drive(cDriveUser):
     cDriveApp.save()
 
 def check_folder_permission(cDriveFolder, cDriveUser, cDriveApp, permission):
-    return FolderPermission.objects.filter(
-        cdrive_folder = cDriveFolder,
-        user = cDriveUser,
-        app = cDriveApp,
-        permission = permission).exists()
+    if permission == 'V' and cDriveFolder.is_public:
+        return True
+    else: 
+        if cDriveApp.__class__.__name__ == 'CDriveApplication':
+            return FolderPermission.objects.filter(
+                cdrive_folder = cDriveFolder,
+                user = cDriveUser,
+                app = cDriveApp,
+                permission = permission).exists()
+        else:
+            return HostedServiceFolderPermission.objects.filter(
+                cdrive_folder = cDriveFolder,
+                user = cDriveUser,
+                service = cDriveApp,
+                permission = permission).exists()
 
 def check_file_permission(cDriveFile, cDriveUser, cDriveApp, permission):
-    return FilePermission.objects.filter(
-        cdrive_file = cDriveFile,
-        user = cDriveUser,
-        app = cDriveApp,
-        permission = permission).exists()
+    if permission == 'V' and CDriveFile.is_public:
+        return True
+    else:
+        if cDriveApp.__class__.__name__ == 'CDriveApplication':
+            return FilePermission.objects.filter(
+                cdrive_file = cDriveFile,
+                user = cDriveUser,
+                app = cDriveApp,
+                permission = permission).exists()
+        else:
+            return HostedServiceFilePermission.objects.filter(
+                cdrive_file = cDriveFile,
+                user = cDriveUser,
+                service = cDriveApp,
+                permission = permission).exists()
 
 def check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, permission):
     if (cDriveObject.__class__.__name__ == 'CDriveFolder'
@@ -89,7 +110,8 @@ def delete_folder(cDriveFolder):
     cDriveFolder.delete()
 
 def share_object(cdrive_object, target_user, target_app, permission):
-    if cdrive_object.__class__.__name__ == 'CDriveFile':
+    if ((cdrive_object.__class__.__name__ == 'CDriveFile')
+        and (target_app.__class__.__name__ == 'CDriveApplication')):
         file_permission = FilePermission(
             cdrive_file = cdrive_object,
             user = target_user,
@@ -97,11 +119,30 @@ def share_object(cdrive_object, target_user, target_app, permission):
             permission = permission
         )
         file_permission.save()
-    else :
+    elif ((cdrive_object.__class__.__name__ == 'CDriveFile')
+        and (target_app.__class__.__name__ == 'HostedService')):
+        file_permission = HostedServiceFilePermission(
+            cdrive_file = cdrive_object,
+            user = target_user,
+            service = target_app,
+            permission = permission
+        )
+        file_permission.save()
+    elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
+        and (target_app.__class__.__name__ == 'CDriveApplication')):
         folder_permission = FolderPermission(
             cdrive_folder = cdrive_object,
             user = target_user,
             app = target_app,
+            permission = permission
+        )
+        folder_permission.save()
+    elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
+        and (target_app.__class__.__name__ == 'HostedService')):
+        folder_permission = FolderPermission(
+            cdrive_folder = cdrive_object,
+            user = target_user,
+            service = target_app,
             permission = permission
         )
         folder_permission.save()

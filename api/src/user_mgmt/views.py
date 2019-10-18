@@ -46,7 +46,7 @@ class ClientDetailsView(APIView):
     def get(self, request, format=None):
         data = {
             'client_id': settings.COLUMBUS_CLIENT_ID,
-            'auth_url': setting.AUTHENTICATION_URL
+            'auth_url': settings.AUTHENTICATION_URL
         }
         return Response(data, status=status.HTTP_200_OK)
 

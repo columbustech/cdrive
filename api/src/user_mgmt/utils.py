@@ -1,5 +1,6 @@
 from .models import CDriveUser
 from apps_api.models import CDriveApplication
+from services_api.models import HostedService
 import requests
 
 def introspect_token(request):
@@ -18,6 +19,8 @@ def introspect_token(request):
             cDriveUser = get_user(response.json()['username'])
         if 'client_id' in response.json():
             cDriveApp = get_app_from_id(response.json()['client_id'], cDriveUser)
+            if cDriveApp is None:
+                cDriveApp = get_service_from_id(response.json()['client_id'], cDriveUser)
     return cDriveUser, cDriveApp
 
 def get_app_from_id(client_id, owner):
@@ -27,10 +30,24 @@ def get_app_from_id(client_id, owner):
     else:
         return None
 
+def get_service_from_id(client_id, owner):
+    query = HostedService.objects.filter(client_id=client_id, owner=owner)
+    if query.exists():
+        return query[0]
+    else:
+        return None
+
 def get_app(app_name, owner):
     app_query = CDriveApplication.objects.filter(name=app_name, owner=owner)
     if app_query.exists():
         return app_query[0]
+    else:
+        return None
+
+def get_service(service_name, owner):
+    query = HostedService.objects.filter(name=service_name, owner=owner)
+    if query.exists():
+        return query[0]
     else:
         return None
 

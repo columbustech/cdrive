@@ -13,7 +13,7 @@ import csv, io
 
 from user_mgmt.utils import introspect_token, get_user, get_app
 
-from .models import CDriveFile, CDriveFolder, FilePermission, FolderPermission
+from .models import CDriveFile, CDriveFolder
 from .serializers import CDriveFileSerializer, CDriveFolderSerializer
 from .utils import *
 
@@ -348,6 +348,12 @@ class ShareView(APIView):
                 share_object(cDriveObject, cDriveUser, target_app, permission)
             else :
                 return Response(status=status.HTTP_403_FORBIDDEN)
+        elif target_type == 'service':
+            if check_permission(cDriveObject, cDriveUser, cDriveApp, permission):
+                target_service = get_service(target_url, cDriveUser)
+                if target_service is None:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                share_object(cDriveObject, cDriveUser, target_service, permission)
         elif target_type == 'user':
             if cDriveObject.owner != cDriveUser:
                 return Response(status=status.HTTP_403_FORBIDDEN)

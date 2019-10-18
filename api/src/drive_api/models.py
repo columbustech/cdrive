@@ -13,6 +13,7 @@ class CDriveFolder(models.Model):
     name = models.CharField(max_length=200)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='%(class)s_parent')
     owner = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, null=True, related_name='%(class)s_owner' )
+    is_public = models.BooleanField(default=False)
 
 class CDriveFile(models.Model):
     name = models.CharField(max_length=200)
@@ -20,6 +21,7 @@ class CDriveFile(models.Model):
     cdrive_file = models.FileField(upload_to=file_path, blank=False, null=False)
     size = models.IntegerField()
     owner = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_owner' )
+    is_public = models.BooleanField(default=False)
 
 class FilePermission(models.Model):
     PERMISSIONS = (
@@ -39,4 +41,24 @@ class FolderPermission(models.Model):
     cdrive_folder = models.ForeignKey('CDriveFolder', on_delete=models.CASCADE, related_name='%(class)s_folder')
     user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
     app = models.ForeignKey('apps_api.CDriveApplication', on_delete=models.CASCADE, related_name='%(class)s_app')
+    permission = models.CharField(max_length=1, choices=PERMISSIONS)
+
+class HostedServiceFilePermission(models.Model):
+    PERMISSIONS = (
+        ('V', 'View'),
+        ('E', 'Edit'),
+    )
+    cdrive_file = models.ForeignKey('CDriveFile', on_delete=models.CASCADE, related_name='%(class)s_file')
+    user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
+    service = models.ForeignKey('services_api.HostedService', on_delete=models.CASCADE, related_name='%(class)s_service')
+    permission = models.CharField(max_length=1, choices=PERMISSIONS)
+
+class HostedServiceFolderPermission(models.Model):
+    PERMISSIONS = (
+        ('V', 'View'),
+        ('E', 'Edit'),
+    )
+    cdrive_folder = models.ForeignKey('CDriveFolder', on_delete=models.CASCADE, related_name='%(class)s_folder')
+    user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
+    service = models.ForeignKey('services_api.HostedService', on_delete=models.CASCADE, related_name='%(class)s_service')
     permission = models.CharField(max_length=1, choices=PERMISSIONS)

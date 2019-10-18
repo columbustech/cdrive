@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drive_api',
     'apps_api',
+    'services_api',
     'user_mgmt',
     'corsheaders',
     'rest_framework',

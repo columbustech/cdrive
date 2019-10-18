@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: cdrive-ui
-          image: "docker.io/kaushikc92/cdrive-ui:latest"
+          image: "docker.io/columbustech/cdrive-ui:latest"
