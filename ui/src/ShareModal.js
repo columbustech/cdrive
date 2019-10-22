@@ -51,6 +51,9 @@ class ShareModal extends React.Component {
     let objDisplay;
     var targetTypeOptions = [];
     var permissionOptions = [];
+    var permission;
+    var target;
+    var label;
     if (this.props.shareObject) {
       if (this.props.shareObject.type === "Folder") {
         objDisplay = <FaFolder style={{marginRight: 6 }} size={25} color="#92cefe" /> ;
@@ -58,6 +61,7 @@ class ShareModal extends React.Component {
         objDisplay = <FaFile style={{marginRight: 6 }} size={25} color="#9c9c9c" />;
       }
       if (this.state.targetType === "application") {
+        label = "App Name:";
         targetTypeOptions.push(
           <option value="application" selected>Application</option>
         );
@@ -66,14 +70,34 @@ class ShareModal extends React.Component {
           <option value="application">Application</option>
         );
       }
+      if (this.state.targetType === "service") {
+        label = "Hosted Service Name:";
+        targetTypeOptions.push(
+          <option value="service" selected>Hosted Service</option>
+        );
+      } else {
+        targetTypeOptions.push(
+          <option value="service">Hosted Service</option>
+        );
+      }
       if (this.props.shareObject.owner === this.props.username) {
         if (this.state.targetType === "user") {
+          label = "Username:";
           targetTypeOptions.push(
             <option value="user" selected>User</option>
           );
         } else {
           targetTypeOptions.push(
             <option value="user">User</option>
+          );
+        }
+        if (this.state.targetType === "public") {
+          targetTypeOptions.push(
+            <option value="public" selected>Public</option>
+          );
+        } else {
+          targetTypeOptions.push(
+            <option value="public">Public</option>
           );
         }
       }
@@ -97,6 +121,22 @@ class ShareModal extends React.Component {
           );
         }
       }
+      if (this.state.targetType !== "public") {
+        permission = (
+          <div className="form-group">
+            <label htmlFor="permission-type">Permission:</label>
+            <select className="form-control" id="permission-type" onChange={this.onPermissionChange}>
+              {permissionOptions}
+            </select>
+          </div>
+        );
+        target = (
+          <div className="form-group">
+            <label htmlFor="obj-name">{label}</label>
+            <input type="text" className="form-control" id="obj-name" value={this.state.name} required onChange={this.onNameChange}/>
+          </div>
+        );
+      }
     }
     return(
       <Modal show={this.props.show} onHide={this.props.toggleModal}>
@@ -114,16 +154,8 @@ class ShareModal extends React.Component {
               {targetTypeOptions}
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="obj-name">{this.state.targetType === "user" ? "Username:" : "Application Name:"}</label>
-            <input type="text" className="form-control" id="obj-name" value={this.state.name} required onChange={this.onNameChange}/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="permission-type">Permission:</label>
-            <select className="form-control" id="permission-type" onChange={this.onPermissionChange}>
-              {permissionOptions}
-            </select>
-          </div>
+          {target}
+          {permission}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.toggleModal}>

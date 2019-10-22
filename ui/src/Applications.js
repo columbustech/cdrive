@@ -56,7 +56,7 @@ class AppItem extends React.Component {
             this.setState({
               isOpening: false
             });
-            window.location.href = window.location.protocol + "//api." + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName;
+            window.location.href = window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName + "/";
           }
         },
         err => {

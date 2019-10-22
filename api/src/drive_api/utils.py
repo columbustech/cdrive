@@ -48,7 +48,7 @@ def check_folder_permission(cDriveFolder, cDriveUser, cDriveApp, permission):
                 permission = permission).exists()
 
 def check_file_permission(cDriveFile, cDriveUser, cDriveApp, permission):
-    if permission == 'V' and CDriveFile.is_public:
+    if permission == 'V' and cDriveFile.is_public:
         return True
     else:
         if cDriveApp.__class__.__name__ == 'CDriveApplication':

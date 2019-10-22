@@ -362,5 +362,10 @@ class ShareView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             target_app = get_app('cdrive', target_user)
             share_object(cDriveObject, target_user, target_app, permission)
+        elif target_type == 'public':
+            if cDriveObject.owner != cDriveUser:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            cDriveObject.is_public = True
+            cDriveObject.save()
 
         return Response(status=status.HTTP_200_OK)

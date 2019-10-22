@@ -92,7 +92,7 @@ class Hosted extends React.Component {
       if (service.is_active) {
         url = service.url;
       } else {
-        url = service.url + "?code=" + service.code;
+        url = service.url + "?clientcode=" + service.code;
       }
       return (
         <tr key={i}>
