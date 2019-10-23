@@ -55,11 +55,13 @@ class Drive extends React.Component {
     );
   }
   handleUpload(acceptedFiles) {
-    var file = acceptedFiles[0];
-    if (file.size < (15 * 1024 * 1024)) {
-      this.directUpload(file);
-    } else {
-      this.chunkedUpload(file);
+    var file;
+    for(file of acceptedFiles) {
+      if (file.size < (15 * 1024 * 1024)) {
+        this.directUpload(file);
+      } else {
+        this.chunkedUpload(file);
+      }
     }
   }
   directUpload(file) {
@@ -269,7 +271,15 @@ class Drive extends React.Component {
                 {dobj.name}
               </div>
             </td> ;
-          size = <td><div className="file-table-text">{dobj.size}</div></td> ;
+          var sizeVal;
+          var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+          if (dobj.size === 0) {
+            sizeVal = '0 B';
+          } else {
+            var logval = parseInt(Math.floor(Math.log(dobj.size) / Math.log(1024)));
+            sizeVal = Math.round(dobj.size / Math.pow(1024, logval), 2) + ' ' + sizes[logval];
+          }
+          size = <td><div className="file-table-text">{sizeVal}</div></td> ;
           ddItems.push(
             <Dropdown.Item onClick={e => this.downloadHandler(e, i)}>
               Download
