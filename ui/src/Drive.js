@@ -54,19 +54,27 @@ class Drive extends React.Component {
       },
     );
   }
-  handleUpload(acceptedFiles) {
-    var file;
-    for(file of acceptedFiles) {
-      if (file.size < (15 * 1024 * 1024)) {
-        this.directUpload(file);
-      } else {
-        this.chunkedUpload(file);
-      }
+  handleUpload(acceptedFiles, index) {
+    if (index >= acceptedFiles.length)  {
+      return;
+    }
+    var file = acceptedFiles[index];
+    let path;
+    var lastIndex = file.path.lastIndexOf("/");
+    if (lastIndex === -1) {
+      path = this.state.path;
+    } else {
+      path = this.state.path + file.path.substring(0, lastIndex);
+    }
+    if (file.size < (15 * 1024 * 1024)) {
+      this.directUpload(acceptedFiles, index, path);
+    } else {
+      this.chunkedUpload(acceptedFiles, index, path);
     }
   }
-  directUpload(file) {
+  directUpload(acceptedFiles, index, path) {
+    var file = acceptedFiles[index];
     const data = new FormData();
-    var path = this.state.path;
     data.append('path', path);
     data.append('file', file);
     const cookies = new Cookies();
@@ -80,12 +88,13 @@ class Drive extends React.Component {
     request.then(
       response => {
         this.getDriveObjects(this.state.path);
+        this.handleUpload(acceptedFiles, index+1);
       },
     );
   }
-  chunkedUpload(file) {
+  chunkedUpload(acceptedFiles, index, path) {
+    var file = acceptedFiles[index];
     var data = new FormData();
-    var path = this.state.path;
     var onCompleteHandler = this.getDriveObjects;
     data.append('path', path);
     data.append('file_name', file.name);
@@ -141,7 +150,8 @@ class Drive extends React.Component {
                     headers: {'Authorization': auth_header}
                   }).then(
                     resp3 => {
-                      onCompleteHandler(path);
+                      onCompleteHandler(this.state.path);
+                      this.handleUpload(acceptedFiles, index+1);
                     },
                   );
                   return;
@@ -348,7 +358,7 @@ class Drive extends React.Component {
     }
 
     return(
-      <Dropzone onDrop={acceptedFiles => this.handleUpload(acceptedFiles)} noClick noKeyboard>
+      <Dropzone onDrop={acceptedFiles => this.handleUpload(acceptedFiles, 0)} noClick noKeyboard>
         {({getRootProps, getInputProps}) => (
           <div {...getRootProps()} className="drive-container" >
             <input {...getInputProps()} />

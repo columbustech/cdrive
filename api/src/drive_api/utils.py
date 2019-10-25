@@ -7,11 +7,15 @@ def get_object_by_path(path):
     tokens = path.split('/')
     parent = None
     for token in tokens:
-        queryset = CDriveFolder.objects.filter(parent=parent, name=token)
-        if queryset.exists():
-            parent = queryset[0]
+        folderQuery = CDriveFolder.objects.filter(parent=parent, name=token)
+        if folderQuery.exists():
+            parent = folderQuery[0]
         else:
-            parent = CDriveFile.objects.get(parent=parent, name=token)
+            fileQuery = CDriveFile.objects.filter(parent=parent, name=token)
+            if fileQuery.exists():
+                return fileQuery[0]
+            else:
+                return None
     return parent
 
 def initialize_user_drive(cDriveUser):

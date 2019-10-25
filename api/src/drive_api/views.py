@@ -25,9 +25,24 @@ class UploadView(APIView):
         cDriveUser, cDriveApp = introspect_token(request)
 
         path = request.data['path']
+        folders = []
         parent = get_object_by_path(path)
+        while parent is None:
+            last_index = path.rfind('/')
+            folders.append(path[last_index+1:])
+            path = path[:last_index]
+            parent = get_object_by_path(path)
 
         if check_permission(parent, cDriveUser, cDriveApp, 'E'):
+            for folder in reversed(folders):
+                cDriveFolder = CDriveFolder(
+                    name = folder,
+                    owner = cDriveUser,
+                    parent = parent
+                )
+                cDriveFolder.save()
+                parent = cDriveFolder
+                
             cDriveFile = CDriveFile(
                 cdrive_file = request.data['file'],
                 name = request.data['file'].name,
@@ -46,14 +61,30 @@ class InitiateChunkedUpload(APIView):
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
         
-        path = request.data['path']
+        original_path = request.data['path']
         file_name = request.data['file_name']
         
+        folders = []
+        path = original_path
         parent = get_object_by_path(path)
+        while parent is None:
+            last_index = path.rfind('/')
+            folders.append(path[last_index+1:])
+            path = path[:last_index]
+            parent = get_object_by_path(path)
 
-        key = path + '/' + file_name
 
         if check_permission(parent, cDriveUser, cDriveApp, 'E'):
+            for folder in reversed(folders):
+                cDriveFolder = CDriveFolder(
+                    name = folder,
+                    owner = cDriveUser,
+                    parent = parent
+                )
+                cDriveFolder.save()
+                parent = cDriveFolder
+        
+            key = original_path + '/' + file_name
             client = boto3.client(
                 's3',
                 region_name = 'us-east-1',
