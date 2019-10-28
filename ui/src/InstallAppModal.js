@@ -10,10 +10,12 @@ class InstallAppModal extends React.Component {
       dockerLink: "",
       isAppInstalling: false,
       installAppPollId: 0,
+      showShare: false
     };
     this.onChange = this.onChange.bind(this);
     this.installApp = this.installApp.bind(this);
     this.installAppPoll = this.installAppPoll.bind(this);
+    this.toggleShowShare = this.toggleShowShare.bind(this);
   }
   onChange(e) {
     this.setState({dockerLink: e.target.value});
@@ -61,6 +63,9 @@ class InstallAppModal extends React.Component {
         }
     );
   }
+  toggleShowShare() {
+    this.setState({ showShare : !this.state.showShare});
+  }
   render() {
     let installButton;
     if (this.state.isAppInstalling) {
@@ -80,13 +85,13 @@ class InstallAppModal extends React.Component {
           <Modal.Title>Install Application</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{paddingBottom: '10px'}}></div>
-            <div className="form-group ">
-              <input type="text"  className="form-control" name="docker-link" value={this.state.dockerLink} 
-                placeholder="Application Image Url" required onChange={this.onChange}/>
-            </div>
+          <div style={{ marginTop: '10px' }} className="form-group">
+            <input type="text"  className="form-control" name="docker-link" value={this.state.dockerLink} 
+              placeholder="Application Image Url" required onChange={this.onChange}/>
+          </div>
         </Modal.Body>
         <Modal.Footer>
+          <button className="btn btn-default mr-auto columbus-text" style={{ textDecoration: 'none' }}>Permissions</button>
           <Button variant="secondary" onClick={this.props.toggleModal}>
             Close
           </Button>

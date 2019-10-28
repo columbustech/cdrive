@@ -39,6 +39,15 @@ class RegisterUserView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class UsersListView(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def get(self, request):
+        users_query = CDriveUser.objects.all()
+        serializer = CDriveUserSerializer(users_query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ClientDetailsView(APIView):
     parser_class = (JSONParser,)
 

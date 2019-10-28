@@ -3,6 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { FaFile, FaFolder } from 'react-icons/fa';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import Select from 'react-select';
 
 class ShareModal extends React.Component {
   constructor(props){
@@ -10,17 +11,84 @@ class ShareModal extends React.Component {
     this.state = {
       name: "",
       targetType: "application",
-      permission: "V"
+      permission: "V",
+      applications: [],
+      users: [],
+      services: []
     };
     this.onNameChange = this.onNameChange.bind(this);
     this.onTargetTypeChange = this.onTargetTypeChange.bind(this);
     this.onPermissionChange = this.onPermissionChange.bind(this);
     this.shareHandler = this.shareHandler.bind(this);
+    this.getApplications = this.getApplications.bind(this);
+    this.getUsers = this.getUsers.bind(this);
+    this.getServices = this.getServices.bind(this);
+  }
+  componentDidMount() {
+    this.getApplications();
+  }
+  getApplications(){
+    const cookies = new Cookies();
+    var auth_header = 'Bearer ' + cookies.get('columbus_token');
+    const request = axios({
+      method: 'GET',
+      url: window.location.protocol + "//api." + window.location.hostname + "/applications-list/",
+      headers: {'Authorization': auth_header}
+    });
+    request.then(
+      response => {
+        this.setState({applications: response.data});
+      },
+    );
+  }
+  getUsers(){
+    const cookies = new Cookies();
+    var auth_header = 'Bearer ' + cookies.get('columbus_token');
+    const request = axios({
+      method: 'GET',
+      url: window.location.protocol + "//api." + window.location.hostname + "/users-list/",
+      headers: {'Authorization': auth_header}
+    });
+    request.then(
+      response => {
+        const req = axios({
+          method: 'GET',
+          url: window.location.protocol + "//api." + window.location.hostname + "/user-details/",
+          headers: {'Authorization': auth_header}
+        });
+        req.then(
+          resp => {
+            this.setState({users: response.data.filter(user => user.username !== resp.data.username)});
+          },
+        );
+      },
+    );
+  }
+  getServices(){
+    const cookies = new Cookies();
+    var auth_header = 'Bearer ' + cookies.get('columbus_token');
+    const request = axios({
+      methods: 'GET',
+      url: window.location.protocol + "//api." + window.location.hostname + "/services-list/",
+      headers: {'Authorization': auth_header}
+    });
+    request.then(
+      response => {
+        this.setState({services: response.data});
+      },
+    );
   }
   onNameChange(e) {
     this.setState({name: e.target.value});
   }
   onTargetTypeChange(e) {
+    if (e.target.value === "application") {
+      this.getApplications();
+    } else if (e.target.value === "user") {
+      this.getUsers();
+    } else if (e.target.value === "service") {
+      this.getServices();
+    }
     this.setState({targetType: e.target.value});
   }
   onPermissionChange(e) {
@@ -61,7 +129,17 @@ class ShareModal extends React.Component {
         objDisplay = <FaFile style={{marginRight: 6 }} size={25} color="#9c9c9c" />;
       }
       if (this.state.targetType === "application") {
-        label = "App Name:";
+        var options = this.state.applications.map((app, j) => (
+          {
+            label: app.name,
+            value: app.name
+          }
+        ));
+        target = (
+          <div className="form-group">
+            <Select id="obj-name" options={options} value={this.state.name} placeholder="Search apps" onChange={this.onNameChange} /> 
+          </div>
+        );
         targetTypeOptions.push(
           <option value="application" selected>Application</option>
         );
@@ -71,7 +149,16 @@ class ShareModal extends React.Component {
         );
       }
       if (this.state.targetType === "service") {
-        label = "Hosted Service Name:";
+        var options = this.state.services.map((service, j) => (
+          {
+            label: service.name,
+            value: service.name
+          }
+        ));
+        target = 
+          <div className="form-group">
+            <Select id="obj-name" options={options} value={this.state.name} placeholder="Search hosted services" onChange={this.onNameChange} /> 
+          </div>
         targetTypeOptions.push(
           <option value="service" selected>Hosted Service</option>
         );
@@ -82,7 +169,17 @@ class ShareModal extends React.Component {
       }
       if (this.props.shareObject.owner === this.props.username) {
         if (this.state.targetType === "user") {
-          label = "Username:";
+          var options = this.state.users.map((user, j) => (
+            {
+              label: user.firstname + " " + user.lastname + " (" + user.username + ")",
+              value: user.username
+            }
+          ));
+          target = (
+            <div className="form-group">
+              <Select id="obj-name" options={options} value={this.state.name} placeholder="Search by name or username" onChange={this.onNameChange} /> 
+            </div>
+          );
           targetTypeOptions.push(
             <option value="user" selected>User</option>
           );
@@ -128,12 +225,6 @@ class ShareModal extends React.Component {
             <select className="form-control" id="permission-type" onChange={this.onPermissionChange}>
               {permissionOptions}
             </select>
-          </div>
-        );
-        target = (
-          <div className="form-group">
-            <label htmlFor="obj-name">{label}</label>
-            <input type="text" className="form-control" id="obj-name" value={this.state.name} required onChange={this.onNameChange}/>
           </div>
         );
       }
