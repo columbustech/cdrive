@@ -48,7 +48,7 @@ class InstallAppModal extends React.Component {
   installAppPoll(appName) {
     const request = axios({
       method: 'GET',
-      url: window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName + "/"
+      url: window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + appName + "/"
     });
     request.then(
         response => {

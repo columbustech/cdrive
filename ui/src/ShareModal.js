@@ -10,6 +10,7 @@ class ShareModal extends React.Component {
     super(props);
     this.state = {
       name: "",
+      searchText: "",
       targetType: "application",
       permission: "V",
       applications: [],
@@ -79,7 +80,7 @@ class ShareModal extends React.Component {
     );
   }
   onNameChange(e) {
-    this.setState({name: e.target.value});
+    this.setState({name: e.value});
   }
   onTargetTypeChange(e) {
     if (e.target.value === "application") {
@@ -136,8 +137,8 @@ class ShareModal extends React.Component {
           }
         ));
         target = (
-          <div className="form-group">
-            <Select id="obj-name" options={options} value={this.state.name} placeholder="Search apps" onChange={this.onNameChange} /> 
+          <div className="form-group" style={{marginTop: '20px'}}>
+            <Select id="obj-name" options={options} placeholder="Search apps" onChange={this.onNameChange} /> 
           </div>
         );
         targetTypeOptions.push(
@@ -156,8 +157,8 @@ class ShareModal extends React.Component {
           }
         ));
         target = 
-          <div className="form-group">
-            <Select id="obj-name" options={options} value={this.state.name} placeholder="Search hosted services" onChange={this.onNameChange} /> 
+          <div className="form-group" style={{marginTop: '20px'}}>
+            <Select id="obj-name" options={options} placeholder="Search hosted services" onChange={this.onNameChange} /> 
           </div>
         targetTypeOptions.push(
           <option value="service" selected>Hosted Service</option>
@@ -176,8 +177,8 @@ class ShareModal extends React.Component {
             }
           ));
           target = (
-            <div className="form-group">
-              <Select id="obj-name" options={options} value={this.state.name} placeholder="Search by name or username" onChange={this.onNameChange} /> 
+            <div className="form-group" style={{marginTop: '20px'}}>
+              <Select id="obj-name" options={options} placeholder="Search by name or username" onChange={this.onNameChange} /> 
             </div>
           );
           targetTypeOptions.push(
@@ -220,8 +221,7 @@ class ShareModal extends React.Component {
       }
       if (this.state.targetType !== "public") {
         permission = (
-          <div className="form-group">
-            <label htmlFor="permission-type">Permission:</label>
+          <div className="form-group" style={{marginTop: '20px'}}>
             <select className="form-control" id="permission-type" onChange={this.onPermissionChange}>
               {permissionOptions}
             </select>
@@ -235,12 +235,11 @@ class ShareModal extends React.Component {
           <Modal.Title>Share</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{paddingBottom: '10px'}}>
+          <div>
             {objDisplay}
             {!this.props.shareObject ? "" : this.props.shareObject.name}
           </div>
-          <div className="form-group">
-            <label htmlFor="share-target-type">Share target:</label>
+          <div className="form-group" style={{marginTop: '20px'}}>
             <select className="form-control" id="share-target-type" onChange={this.onTargetTypeChange} >
               {targetTypeOptions}
             </select>
