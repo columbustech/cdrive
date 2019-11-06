@@ -1,0 +1,12 @@
+#results {
+    white-space: pre-wrap;
+}
+
+textarea {
+    white-space: pre-wrap;
+}
+
+pre {
+    word-wrap: braak-word;
+    white-space: pre-wrap;
+}

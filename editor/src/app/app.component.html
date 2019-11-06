@@ -1,0 +1,14 @@
+<!-- link stylesheet for icons of the ngx-wig text editor -->
+<link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.1.19/css/materialdesignicons.min.css">
+
+<br>
+<h3> Edit contents of {{fileName}}</h3>
+<form [formGroup]="fileForm" (ngSubmit)="onSubmit()">
+    <label>
+        <textarea id="results" rows="50" cols="220" formControlName="downloadFileContent"></textarea>
+    </label>
+    <br>
+    <br>
+    <button type="submit" [disabled]="!fileForm.valid">Submit</button>
+</form>
+<!-- <br> Current URL is: <code>{{location.path()}}</code><br> -->
