@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: editor
+spec:
+  selector:
+    matchLabels:
+      name: editor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: editor
+    spec:
+      containers:
+        - name: editor
+          image: "docker.io/columbustech/editor:latest"

@@ -290,6 +290,14 @@ class Drive extends React.Component {
             sizeVal = Math.round(dobj.size / Math.pow(1024, logval), 2) + ' ' + sizes[logval];
           }
           size = <td><div className="file-table-text">{sizeVal}</div></td> ;
+          if (dobj.permission === "Edit") {
+            var editUrl = window.location.protocol + "//" + window.location.hostname + "/editor/?path=" + this.state.path + "/" + dobj.name;
+            ddItems.push(
+              <Dropdown.Item href={editUrl} >
+                Edit
+              </Dropdown.Item>
+            );
+          }
           ddItems.push(
             <Dropdown.Item onClick={e => this.downloadHandler(e, i)}>
               Download
