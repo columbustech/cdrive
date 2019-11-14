@@ -170,6 +170,10 @@ func startApp(imagePath string, username string, appName string, clientId string
 									Value: os.Getenv("CDRIVE_URL"),
 								},
 								{
+									Name:  "CDRIVE_API_URL",
+									Value: os.Getenv("CDRIVE_API_URL"),
+								},
+								{
 									Name:  "AUTHENTICATION_URL",
 									Value: os.Getenv("AUTH_URL"),
 								},

@@ -5,4 +5,5 @@ metadata:
 data:
   AUTHENTICATION_URL: https://authentication.columbusecosystem.com/
   CDRIVE_URL: https://cdrive.columbusecosystem.com/ 
+  CDRIVE_API_URL: https://api.cdrive.columbusecosystem.com/
   CDRIVE_DOMAIN: cdrive.columbusecosystem.com
