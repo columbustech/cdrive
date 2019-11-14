@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: app-manager-env
 data:
-  AUTHENTICATION_URL: https://authentication.columbusecosystem.com/
-  CDRIVE_URL: https://cdrive.columbusecosystem.com/ 
-  CDRIVE_API_URL: https://api.cdrive.columbusecosystem.com/
-  CDRIVE_DOMAIN: cdrive.columbusecosystem.com
+  AUTHENTICATION_URL: <auth_url>
+  CDRIVE_URL: <cdrive_url>
+  CDRIVE_API_URL: <cdrive_api_url> 
+  CDRIVE_DOMAIN: <cdrive_domain> 

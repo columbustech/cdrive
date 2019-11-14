@@ -14,7 +14,10 @@ spec:
     spec:
       containers:
         - name: app-manager
-          image: "docker.io/kaushikc92/app-manager:latest"
+          image: "docker.io/columbustech/app-manager:latest"
           ports:
             - name: http
               containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: app-manager-env
