@@ -7,6 +7,7 @@ urlpatterns = [
     path('upload-chunk/', views.UploadChunk.as_view()),
     path('complete-chunked-upload/', views.CompleteChunkedUpload.as_view()),
     path('list/', views.ListView.as_view()),
+    path('list-recursive/', views.ListRecursiveView.as_view()),
     path('delete/', views.DeleteView.as_view()),
     path('download/', views.DownloadView.as_view()),
     path('content/', views.ContentView.as_view()),

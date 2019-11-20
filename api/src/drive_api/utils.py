@@ -1,4 +1,5 @@
 from .models import CDriveFolder, CDriveFile, FolderPermission, FilePermission, HostedServiceFolderPermission, HostedServiceFolderPermission
+from .serializers import CDriveFileSerializer, CDriveFolderSerializer
 from apps_api.models import CDriveApplication
 from services_api.models import HostedService
 from django.conf import settings
@@ -150,3 +151,37 @@ def share_object(cdrive_object, target_user, target_app, permission):
             permission = permission
         )
         folder_permission.save()
+
+def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app):
+    data = []
+    folders = CDriveFolder.objects.filter(parent=cdrive_folder)
+    for f in folders:
+        ser = CDriveFolderSerializer(f).data
+        if check_permission(f, cdrive_user, cdrive_app, 'E'):
+            ser['permission'] = 'Edit'
+            ser['type'] = 'Folder'
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            data.append(ser)
+        elif check_permission(f, cdrive_user, cdrive_app, 'V'):
+            ser['permission'] = 'View'
+            ser['type'] = 'Folder'
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            data.append(ser)
+        elif check_child_permission(f, cdrive_user, cdrive_app):
+            ser['permission'] = 'None'
+            ser['type'] = 'Folder'
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            data.append(ser)
+    
+    files = CDriveFile.objects.filter(parent=cdrive_folder)
+    for f in files:
+        ser = CDriveFileSerializer(f).data
+        if check_permission(f, cdrive_user, cdrive_app, 'E'):
+            ser['permission'] = 'Edit'
+            ser['type'] = 'File'
+            data.append(ser)
+        elif check_permission(f, cdrive_user, cdrive_app, 'V'):
+            ser['permission'] = 'View'
+            ser['type'] = 'File'
+            data.append(ser)
+    return data

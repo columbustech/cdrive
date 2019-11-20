@@ -261,6 +261,17 @@ class ListView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
+class ListRecursiveView(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def get(self, request):
+        cDriveUser, cDriveApp = introspect_token(request)
+        data = {}
+        home_folder = CDriveFolder.objects.filter(name='users', parent=None, owner=None)[0]
+        data['driveObjects'] = serialize_folder_recursive(home_folder, cDriveUser, cDriveApp)
+        return Response(data, status=status.HTTP_200_OK)
+
 class DeleteView(APIView):
     parser_class = (JSONParser,)
 
