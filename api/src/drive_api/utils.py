@@ -1,4 +1,4 @@
-from .models import CDriveFolder, CDriveFile, FolderPermission, FilePermission, HostedServiceFolderPermission, HostedServiceFolderPermission
+from .models import CDriveFolder, CDriveFile, FolderPermission, FilePermission, HostedServiceFolderPermission, HostedServiceFilePermission
 from .serializers import CDriveFileSerializer, CDriveFolderSerializer
 from apps_api.models import CDriveApplication
 from services_api.models import HostedService
@@ -152,7 +152,7 @@ def share_object(cdrive_object, target_user, target_app, permission):
         )
         folder_permission.save()
 
-def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app):
+def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app, cdrive_path):
     data = []
     folders = CDriveFolder.objects.filter(parent=cdrive_folder)
     for f in folders:
@@ -160,17 +160,20 @@ def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app):
         if check_permission(f, cdrive_user, cdrive_app, 'E'):
             ser['permission'] = 'Edit'
             ser['type'] = 'Folder'
-            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            ser['path'] = cdrive_path + '/' + f.name
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app, cdrive_path + '/' + f.name)
             data.append(ser)
         elif check_permission(f, cdrive_user, cdrive_app, 'V'):
             ser['permission'] = 'View'
             ser['type'] = 'Folder'
-            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            ser['path'] = cdrive_path + '/' + f.name
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app, cdrive_path + '/' + f.name)
             data.append(ser)
         elif check_child_permission(f, cdrive_user, cdrive_app):
             ser['permission'] = 'None'
             ser['type'] = 'Folder'
-            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app)
+            ser['path'] = cdrive_path + '/' + f.name
+            ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app, cdrive_path + '/' + f.name)
             data.append(ser)
     
     files = CDriveFile.objects.filter(parent=cdrive_folder)
@@ -179,9 +182,11 @@ def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app):
         if check_permission(f, cdrive_user, cdrive_app, 'E'):
             ser['permission'] = 'Edit'
             ser['type'] = 'File'
+            ser['path'] = cdrive_path + '/' + f.name
             data.append(ser)
         elif check_permission(f, cdrive_user, cdrive_app, 'V'):
             ser['permission'] = 'View'
             ser['type'] = 'File'
+            ser['path'] = cdrive_path + '/' + f.name
             data.append(ser)
     return data

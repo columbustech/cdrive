@@ -269,7 +269,7 @@ class ListRecursiveView(APIView):
         cDriveUser, cDriveApp = introspect_token(request)
         data = {}
         home_folder = CDriveFolder.objects.filter(name='users', parent=None, owner=None)[0]
-        data['driveObjects'] = serialize_folder_recursive(home_folder, cDriveUser, cDriveApp)
+        data['driveObjects'] = serialize_folder_recursive(home_folder, cDriveUser, cDriveApp, 'users')
         return Response(data, status=status.HTTP_200_OK)
 
 class DeleteView(APIView):
