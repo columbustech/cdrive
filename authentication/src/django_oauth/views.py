@@ -6,7 +6,7 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from oauth2_provider.models import Application
-import requests
+import requests, re
 
 def create_account(request):
     if request.method == 'POST':
@@ -15,8 +15,20 @@ def create_account(request):
         if User.objects.filter(username=username).exists():
             messages.error(request, "Sorry, this username is already taken")
             return render(request, 'registration/create-user.html')
+
+        if not re.match("^[a-z0-9]*$", username):
+            messages.error(request, "Username can only contain lower case letters and numbers")
+            return render(request, 'registration/create-user.html')
         
         password = request.POST['password']
+        confirm = request.POST['confirm']
+        if len(password) < 6:
+            messages.error(request, "The password needs to contain at least 6 characters")
+            return render(request, 'registration/create-user.html')
+        if password != confirm:
+            messages.error(request, "The password and confirmation password do not match")
+            return render(request, 'registration/create-user.html')
+
         user = User.objects.create_user(
             username = request.POST['username'],
             password = request.POST['password']
