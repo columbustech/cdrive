@@ -46,18 +46,23 @@ class InstallAppModal extends React.Component {
     );
   }
   installAppPoll(appName) {
+    const cookies = new Cookies();
+    var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
       method: 'GET',
-      url: window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + appName + "/"
+      url: window.location.protocol + "//api." + window.location.hostname + "/app-status/?app_name=" + appName,
+      headers: {'Authorization': auth_header}
     });
     request.then(
         response => {
-          clearInterval(this.state.installAppPollId);
-          this.setState({
-            isAppInstalling: false
-          });
-          this.props.toggleModal();
-          this.props.getApplications();
+          if(response.data.appStatus === "Running") {
+            clearInterval(this.state.installAppPollId);
+            this.setState({
+              isAppInstalling: false
+            });
+            this.props.toggleModal();
+            this.props.getApplications();
+          }
         },
         err => {
         }

@@ -23,6 +23,8 @@ class UploadView(APIView):
     @csrf_exempt
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         path = request.data['path']
         folders = []
@@ -60,6 +62,8 @@ class InitiateChunkedUpload(APIView):
 
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         
         original_path = request.data['path']
         file_name = request.data['file_name']
@@ -104,16 +108,13 @@ class UploadChunk(APIView):
 
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-
-        if cDriveUser is None:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.data['path']
         file_name = request.data['file_name']
         part_number = int(request.data['partNumber'])
         upload_id = request.data['uploadId']
         chunk_data = request.data['chunk']
-
         key = path + '/' + file_name
 
         client = boto3.client(
@@ -141,11 +142,8 @@ class CompleteChunkedUpload(APIView):
 
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-
-        cDriveUser, cDriveApp = introspect_token(request)
-
-        cDriveUser, cDriveApp = introspect_token(request)
-
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.data['path']
         file_name = request.data['file_name']
         upload_id = request.data['uploadId']
@@ -196,7 +194,8 @@ class CreateView(APIView):
     @csrf_exempt
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.data['path']
         name = request.data['name']
 
@@ -219,7 +218,8 @@ class ListView(APIView):
     @csrf_exempt
     def get(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.query_params['path']
         parent = get_object_by_path(path)
 
@@ -267,6 +267,8 @@ class ListRecursiveView(APIView):
     @csrf_exempt
     def get(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         data = {}
         home_folder = CDriveFolder.objects.filter(name='users', parent=None, owner=None)[0]
         data['driveObjects'] = serialize_folder_recursive(home_folder, cDriveUser, cDriveApp, 'users')
@@ -278,7 +280,8 @@ class DeleteView(APIView):
     @csrf_exempt
     def delete(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-        
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.query_params['path']
         cDriveObject = get_object_by_path(path)
         
@@ -297,7 +300,8 @@ class DownloadView(APIView):
     @csrf_exempt
     def get(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-        
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.query_params['path']
         cDriveObject = get_object_by_path(path)
 
@@ -327,7 +331,8 @@ class ContentView(APIView):
     @csrf_exempt
     def get(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-        
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.query_params['path']
         cDriveObject = get_object_by_path(path)
 
@@ -346,7 +351,8 @@ class JsonContentView(APIView):
     @csrf_exempt
     def get(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
-        
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         path = request.query_params['path']
         cDriveObject = get_object_by_path(path)
 
@@ -369,6 +375,8 @@ class ShareView(APIView):
     @csrf_exempt
     def post(self, request):
         cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if cDriveApp.name != 'cdrive':
             return Response(status=status.HTTP_403_FORBIDDEN)

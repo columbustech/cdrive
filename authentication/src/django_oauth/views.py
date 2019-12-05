@@ -65,6 +65,7 @@ def register_application(request):
                 redirect_uris = redirect_url,
                 client_type = Application.CLIENT_PUBLIC,
                 authorization_grant_type = Application.GRANT_AUTHORIZATION_CODE,
+                skip_authorization = True
             )
             
         app.save()
