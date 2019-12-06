@@ -175,7 +175,7 @@ func startApp(imagePath string, username string, appName string, clientId string
 								},
 								{
 									Name:  "AUTHENTICATION_URL",
-									Value: os.Getenv("AUTH_URL"),
+									Value: os.Getenv("AUTHENTICATION_URL"),
 								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{
