@@ -1,23 +1,12 @@
-apiVersion: apps/v1
-kind: Deployment
+kind: Service
+apiVersion: v1
 metadata:
   name: app-manager
 spec:
   selector:
-    matchLabels:
-      name: app-manager
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: app-manager
-    spec:
-      containers:
-        - name: app-manager
-          image: "docker.io/columbustech/app-manager:latest"
-          ports:
-            - name: http
-              containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: app-manager-env
+    name: app-manager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
