@@ -76,7 +76,7 @@ class InstallAppModal extends React.Component {
     if (this.state.isAppInstalling) {
       installButton = 
         <Button variant="primary" disabled>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         </Button>
     } else {
       installButton = 

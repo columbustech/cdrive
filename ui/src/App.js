@@ -6,6 +6,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Drive from './Drive';
 import Applications from './Applications';
 import Hosted from './Hosted';
+import JupyterNB from './JupyterNB';
 import './App.css';
 
 const tabs = [
@@ -23,6 +24,11 @@ const tabs = [
     name: 'hosted',
     displayName: 'Hosted Services',
     component: Hosted,
+  },
+  {
+    name: 'jnb',
+    displayName: 'Jupyter Notebook',
+    component: JupyterNB,
   },
 ]
 
@@ -162,7 +168,7 @@ class App extends React.Component {
       return(
         <div className="cdrive-container" >
           <div className="left-panel">
-            <nav className="navbar navbar-expand navbar-light">
+            <nav className="navbar navbar-expand navbar-light nav-header">
               <span className="navbar-brand">Columbus</span>
             </nav>
             <div className="side-bar">
@@ -172,7 +178,7 @@ class App extends React.Component {
             </div>
           </div>
           <div className="right-panel">
-            <nav className="navbar navbar-expand navbar-light">
+            <nav className="navbar navbar-expand navbar-light nav-header">
               <span className="navbar-brand">{tabs[this.state.activeTabIndex].displayName}</span>
               <div className="justify-content-end navbar-collapse collapse">
                 <DropdownButton id="dropdown-basic-button" variant="transparent" 

@@ -1,11 +1,22 @@
 from .models import CDriveUser
 from apps_api.models import CDriveApplication
 from services_api.models import HostedService
-import requests
+import requests, jwt
+from django.conf import settings
 
 def introspect_token(request):
     auth_header = request.META['HTTP_AUTHORIZATION']
     token = auth_header.split()[1] 
+    try:
+        data = jwt.decode(token, settings.COLUMBUS_CLIENT_SECRET, algorithms='HS256')
+        cDriveUser = CDriveUser.objects.filter(username=data['username'])[0]
+        cDriveApp = CDriveApplication.objects.filter(name=data['app_name'])[0]
+        return cDriveUser, cDriveApp
+    except jwt.ExpiredSignatureError:
+        pass
+    except jwt.InvalidTokenError:
+        pass
+
     url = 'http://authentication/o/introspect/'
     response = requests.post(
         url=url,

@@ -22,3 +22,4 @@ spec:
     - authentication.columbusecosystem.com
     - cdrive.columbusecosystem.com
     - api.cdrive.columbusecosystem.com
+    - notebook.columbusecosystem.com

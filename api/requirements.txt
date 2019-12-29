@@ -4,3 +4,4 @@ django-cors-middleware
 requests
 boto3
 django-storages
+pyjwt

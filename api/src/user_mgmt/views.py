@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-import requests
+import requests, jwt, datetime
 
 from .models import CDriveUser
 from .serializers import CDriveUserSerializer
@@ -76,6 +76,25 @@ class AuthenticationTokenView(APIView):
         response = requests.post(url='http://authentication/o/token/', data=data)
 
         return Response(response.json(), status=response.status_code)
+
+class AppTokenView(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def post(self, request):
+        cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if cDriveApp.name != 'cdrive':
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        app_name = request.data['app_name']
+        data = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+            'username': cDriveUser.username,
+            'app_name': app_name
+        }
+        token = jwt.encode(data, settings.COLUMBUS_CLIENT_SECRET, algorithm='HS256')
+        return Response({'app_token': token}, status=status.HTTP_200_OK)
 
 class LogoutView(APIView):
     parser_class = (JSONParser,)

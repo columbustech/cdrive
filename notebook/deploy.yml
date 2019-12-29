@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdrive-jnb
+spec:
+  selector:
+    matchLabels:
+      name: cdrive-jnb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: cdrive-jnb
+    spec:
+      containers:
+        - name: cdrive-jnb
+          image: "docker.io/jupyter/base-notebook:latest"
+          ports:
+            - name: http
+              containerPort: 8888

@@ -93,6 +93,8 @@ class Drive extends React.Component {
     );
   }
   chunkedUpload(acceptedFiles, index, path) {
+    var currentPath = this.state.path;
+    var handleUpload = this.handleUpload;
     var file = acceptedFiles[index];
     var data = new FormData();
     var onCompleteHandler = this.getDriveObjects;
@@ -150,8 +152,8 @@ class Drive extends React.Component {
                     headers: {'Authorization': auth_header}
                   }).then(
                     resp3 => {
-                      onCompleteHandler(this.state.path);
-                      this.handleUpload(acceptedFiles, index+1);
+                      onCompleteHandler(currentPath);
+                      handleUpload(acceptedFiles, index+1);
                     },
                   );
                   return;
