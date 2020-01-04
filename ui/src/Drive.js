@@ -23,8 +23,8 @@ class Drive extends React.Component {
     };
     this.getDriveObjects = this.getDriveObjects.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
-    this.directUpload = this.directUpload.bind(this);
-    this.chunkedUpload = this.chunkedUpload.bind(this);
+    this.presignedUpload = this.presignedUpload.bind(this);
+    this.completeUpload = this.completeUpload.bind(this);
     this.deleteHandler = this.deleteHandler.bind(this);
     this.downloadHandler = this.downloadHandler.bind(this);
     this.shareHandler = this.shareHandler.bind(this);
@@ -54,130 +54,61 @@ class Drive extends React.Component {
       },
     );
   }
-  handleUpload(acceptedFiles, index) {
-    if (index >= acceptedFiles.length)  {
-      return;
-    }
-    var file = acceptedFiles[index];
-    let path;
-    var lastIndex = file.path.lastIndexOf("/");
-    if (lastIndex === -1) {
-      path = this.state.path;
-    } else {
-      path = this.state.path + file.path.substring(0, lastIndex);
-    }
-    if (file.size < (15 * 1024 * 1024)) {
-      this.directUpload(acceptedFiles, index, path);
-    } else {
-      this.chunkedUpload(acceptedFiles, index, path);
-    }
-  }
-  directUpload(acceptedFiles, index, path) {
-    var file = acceptedFiles[index];
-    const data = new FormData();
-    data.append('path', path);
-    data.append('file', file);
+  completeUpload(uploadId) {
     const cookies = new Cookies();
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
+    const data = new FormData();
+    data.append('uploadId', uploadId);
     const request = axios({
       method: 'POST',
-      url: window.location.protocol + "//api." + window.location.hostname + "/upload/",
+      url: window.location.protocol + "//api." + window.location.hostname + "/complete-upload-alt/",
       data: data,
       headers: {'Authorization': auth_header}
     });
     request.then(
       response => {
         this.getDriveObjects(this.state.path);
-        this.handleUpload(acceptedFiles, index+1);
       },
     );
   }
-  chunkedUpload(acceptedFiles, index, path) {
-    var currentPath = this.state.path;
-    var handleUpload = this.handleUpload;
-    var file = acceptedFiles[index];
-    var data = new FormData();
-    var onCompleteHandler = this.getDriveObjects;
-    data.append('path', path);
-    data.append('file_name', file.name);
-    const cookies = new Cookies();
-    var auth_header = 'Bearer ' + cookies.get('columbus_token');
-    var request = axios({
+  presignedUpload(file, url, fields, uploadId) {
+    const data = new FormData();
+    Object.keys(fields).forEach(key => {
+      data.append(key, fields[key]);
+    });
+    data.append('file', file);
+    const request = axios({
       method: 'POST',
-      url: window.location.protocol + "//api." + window.location.hostname + "/initiate-chunked-upload/",
+      url: url,
       data: data,
-      headers: {'Authorization': auth_header}
+      onUploadProgress: function (progressEvent) {
+        console.log(progressEvent);
+      }
     });
     request.then(
-      response => {
-        var uploadId = response.data.uploadId;
-        var chunkSize = 10 * 1024 * 1024;
-        var offset = 0;
-        var partNumber = 0;
-        var chunkReaderBlock = null;
-        var mpu = [];
-
-        var readEventHandler = function(evt) {
-          if (evt.target.error == null) {
-            offset += evt.target.result.length;
-            partNumber += 1;
-
-            data = new FormData();
-            data.append('partNumber', partNumber);
-            data.append('path', path);
-            data.append('file_name', file.name);
-            data.append('uploadId', uploadId);
-            data.append('chunk', evt.target.result);
-
-            axios({
-              method: 'POST',
-              url: window.location.protocol + "//api." + window.location.hostname + "/upload-chunk/",
-              data: data,
-              headers: {'Authorization': auth_header}
-            }).then(
-              resp2 => {
-                mpu.push(resp2.data.ETag);
-                if (offset >= file.size) {
-                  data = new FormData();
-                  data.append('path', path);
-                  data.append('file_name', file.name);
-                  data.append('uploadId', uploadId);
-                  data.append('partInfo', mpu);
-                  data.append('size', file.size);
-
-                  axios({
-                    method: 'POST',
-                    url: window.location.protocol + "//api." + window.location.hostname + "/complete-chunked-upload/",
-                    data: data,
-                    headers: {'Authorization': auth_header}
-                  }).then(
-                    resp3 => {
-                      onCompleteHandler(currentPath);
-                      handleUpload(acceptedFiles, index+1);
-                    },
-                  );
-                  return;
-                } else {
-                  chunkReaderBlock(offset, chunkSize, file);
-                }
-              },
-            );
-          } else {
-            console.log("Read error: " + evt.target.error);
-            return;
-          }
-        }
-
-        chunkReaderBlock = function(_offset, length, _file) {
-          var r = new FileReader();
-          var blob = _file.slice(_offset, length + _offset);
-          r.onload = readEventHandler;
-          r.readAsText(blob);
-        }
-
-        chunkReaderBlock(offset, chunkSize, file);
-      },
+      response => this.completeUpload(uploadId),
     );
+  }
+  handleUpload(acceptedFiles) {
+    const cookies = new Cookies();
+    var auth_header = 'Bearer ' + cookies.get('columbus_token');
+    acceptedFiles.forEach(acceptedFile => {
+      const data = new FormData();
+      if(acceptedFile.path.charAt(0) === '/') {
+        data.append('path', this.state.path + acceptedFile.path);
+      } else {
+        data.append('path', this.state.path + '/' + acceptedFile.path);
+      }
+      const request = axios({
+        method: 'POST',
+        url: window.location.protocol + "//api." + window.location.hostname + "/initiate-upload-alt/",
+        data: data,
+        headers: {'Authorization': auth_header}
+      });
+      request.then(
+        response => this.presignedUpload(acceptedFile, response.data.url, response.data.fields, response.data.uploadId),
+      );
+    });
   }
   deleteHandler(e, index) {
     e.preventDefault();

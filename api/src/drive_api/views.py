@@ -12,6 +12,7 @@ from botocore.client import Config
 import csv, io
 
 from user_mgmt.utils import introspect_token, get_user, get_app
+import jwt, datetime
 
 from .models import CDriveFile, CDriveFolder
 from .serializers import CDriveFileSerializer, CDriveFolderSerializer
@@ -54,6 +55,90 @@ class UploadView(APIView):
             )
             cDriveFile.save()
             return Response({'file_name':request.data['file'].name}, status=status.HTTP_201_CREATED)
+        else :
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+class InitiateUploadAlt(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def post(self, request):
+        cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        path = request.data['path']
+
+        parent_path = path[:path.rfind('/')]
+        folders = []
+        parent = get_object_by_path(parent_path)
+        while parent is None:
+            last_index = parent_path.rfind('/')
+            folders.append(parent_path[last_index+1:])
+            parent_path = parent_path[:last_index]
+            parent = get_object_by_path(parent_path)
+
+        if check_permission(parent, cDriveUser, cDriveApp, 'E'):
+            for folder in reversed(folders):
+                cDriveFolder, created = CDriveFolder.objects.get_or_create(
+                    name = folder,
+                    owner = cDriveUser,
+                    parent = parent
+                )
+                parent = cDriveFolder
+                
+            client = boto3.client(
+                's3', 
+                region_name = 'us-east-1',
+                config=Config(signature_version='s3v4'),
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
+            response = client.generate_presigned_post(settings.AWS_STORAGE_BUCKET_NAME, path, ExpiresIn=3600)
+            upload_id_data = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+                'path': path,
+            }
+            upload_id = jwt.encode(upload_id_data, settings.COLUMBUS_CLIENT_SECRET, algorithm='HS256')
+            return Response({'url': response['url'], 'fields': response['fields'], 'uploadId': upload_id}, status=status.HTTP_200_OK)
+        else :
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+class CompleteUploadAlt(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def post(self, request):
+        cDriveUser, cDriveApp = introspect_token(request)
+        if cDriveUser == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        upload_id = request.data['uploadId']
+        data = jwt.decode(upload_id, settings.COLUMBUS_CLIENT_SECRET, algorithms='HS256')
+        path = data['path']
+
+        last_index = path.rfind('/')
+        parent_path = path[:path.rfind('/')]
+        file_name = path[last_index + 1:]
+        parent = get_object_by_path(parent_path)
+
+        if check_permission(parent, cDriveUser, cDriveApp, 'E'):
+            resource = boto3.resource(
+                's3', 
+                region_name = 'us-east-1',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
+            size = resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME).Object(path).content_length
+            cDriveFile = CDriveFile(
+                cdrive_file = path,
+                name = file_name,
+                owner = cDriveUser,
+                parent = parent,
+                size = size
+            )
+            cDriveFile.save()
+            return Response({'file_name':file_name}, status=status.HTTP_201_CREATED)
         else :
             return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -269,9 +354,14 @@ class ListRecursiveView(APIView):
         cDriveUser, cDriveApp = introspect_token(request)
         if cDriveUser == None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+        path = request.query_params['path']
+        folder = get_object_by_path(path)
+        if folder is None :
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        if not (check_permission(folder, cDriveUser, cDriveApp, 'V') or check_child_permission(folder, cDriveUser, cDriveApp)):
+            return Response(status=status.HTTP_403_FORBIDDEN)
         data = {}
-        home_folder = CDriveFolder.objects.filter(name='users', parent=None, owner=None)[0]
-        data['driveObjects'] = serialize_folder_recursive(home_folder, cDriveUser, cDriveApp, 'users')
+        data['driveObjects'] = serialize_folder_recursive(folder, cDriveUser, cDriveApp, path)
         return Response(data, status=status.HTTP_200_OK)
 
 class DeleteView(APIView):

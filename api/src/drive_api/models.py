@@ -15,6 +15,9 @@ class CDriveFolder(models.Model):
     owner = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, null=True, related_name='%(class)s_owner' )
     is_public = models.BooleanField(default=False)
 
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['name', 'parent'], name='unique_folder')]
+
 class CDriveFile(models.Model):
     name = models.CharField(max_length=200)
     parent = models.ForeignKey('CDriveFolder', on_delete=models.CASCADE, related_name='%(class)s_parent') 
@@ -22,6 +25,9 @@ class CDriveFile(models.Model):
     size = models.IntegerField()
     owner = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_owner' )
     is_public = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['name', 'parent'], name='unique_file')]
 
 class FilePermission(models.Model):
     PERMISSIONS = (

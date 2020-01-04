@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('upload/', views.UploadView.as_view()),
+    path('initiate-upload-alt/', views.InitiateUploadAlt.as_view()),
+    path('complete-upload-alt/', views.CompleteUploadAlt.as_view()),
     path('initiate-chunked-upload/', views.InitiateChunkedUpload.as_view()),
     path('upload-chunk/', views.UploadChunk.as_view()),
     path('complete-chunked-upload/', views.CompleteChunkedUpload.as_view()),
