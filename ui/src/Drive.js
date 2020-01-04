@@ -23,6 +23,7 @@ class Drive extends React.Component {
     };
     this.getDriveObjects = this.getDriveObjects.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
     this.presignedUpload = this.presignedUpload.bind(this);
     this.completeUpload = this.completeUpload.bind(this);
     this.deleteHandler = this.deleteHandler.bind(this);
@@ -65,13 +66,13 @@ class Drive extends React.Component {
       data: data,
       headers: {'Authorization': auth_header}
     });
-    request.then(
+    return request.then(
       response => {
         this.getDriveObjects(this.state.path);
       },
     );
   }
-  presignedUpload(file, url, fields, uploadId) {
+  presignedUpload(file, url, fields) {
     const data = new FormData();
     Object.keys(fields).forEach(key => {
       data.append(key, fields[key]);
@@ -82,33 +83,45 @@ class Drive extends React.Component {
       url: url,
       data: data,
       onUploadProgress: function (progressEvent) {
-        console.log(progressEvent);
       }
     });
-    request.then(
-      response => this.completeUpload(uploadId),
+     return request.then(
+      response => {
+      },
     );
   }
-  handleUpload(acceptedFiles) {
+  uploadFile(file) {
     const cookies = new Cookies();
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
-    acceptedFiles.forEach(acceptedFile => {
-      const data = new FormData();
-      if(acceptedFile.path.charAt(0) === '/') {
-        data.append('path', this.state.path + acceptedFile.path);
-      } else {
-        data.append('path', this.state.path + '/' + acceptedFile.path);
-      }
-      const request = axios({
-        method: 'POST',
-        url: window.location.protocol + "//api." + window.location.hostname + "/initiate-upload-alt/",
-        data: data,
-        headers: {'Authorization': auth_header}
-      });
-      request.then(
-        response => this.presignedUpload(acceptedFile, response.data.url, response.data.fields, response.data.uploadId),
-      );
+    const data = new FormData();
+    if(file.path.charAt(0) === '/') {
+      data.append('path', this.state.path + file.path);
+    } else {
+      data.append('path', this.state.path + '/' + file.path);
+    }
+    const request = axios({
+      method: 'POST',
+      url: window.location.protocol + "//api." + window.location.hostname + "/initiate-upload-alt/",
+      data: data,
+      headers: {'Authorization': auth_header}
     });
+    let uploadId;
+    return request.then(
+      response => {
+        uploadId = response.data.uploadId;
+        return this.presignedUpload(file, response.data.url, response.data.fields);
+      },
+    ).then(result => this.completeUpload(uploadId));
+  }
+  handleUpload(acceptedFiles) {
+    let uploadPromise;
+    for (const file of acceptedFiles) {
+      if (uploadPromise) {
+        uploadPromise = uploadPromise.then(() => this.uploadFile(file));
+      } else {
+        uploadPromise = this.uploadFile(file);
+      }
+    }
   }
   deleteHandler(e, index) {
     e.preventDefault();
