@@ -47,6 +47,17 @@ class Drive extends React.Component {
     });
     request.then(
       response => {
+        response.data.driveObjects.sort((dobj1, dobj2) => {
+          if(dobj1.type === "Folder" && dobj2.type === "File") {
+            return -1;
+          } else if (dobj2.type === "Folder" && dobj1.type === "File") {
+            return 1;
+          } else if (dobj2.name > dobj1.name) {
+            return -1;
+          } else {
+            return 1;
+          }
+        });
         this.setState({
           driveObjects: response.data.driveObjects,
           permission: response.data.permission,
