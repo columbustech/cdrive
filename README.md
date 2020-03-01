@@ -16,6 +16,11 @@ For further details, visit our [homepage](https://columbustech.io).
 
 [![Alt text](https://img.youtube.com/vi/uMvqmm-u42Y/0.jpg)](https://www.youtube.com/watch?v=uMvqmm-u42Y)
 
+## Deploy CDrive
+
+Instructions on how to deploy your own copy of CDrive can be found 
+[here](https://www.github.com/columbustech/cdrive/install.md).
+
 ## App Store
 
 Our [app store page](https://columbustech.io/appstore) contains detailed information about currently available apps as well as upcoming ones.  
