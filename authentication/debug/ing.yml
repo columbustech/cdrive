@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
 spec:
   rules:
-  - host: authentication.columbusecosystem.com
+  - host: <authentication_hostname>
     http:
       paths: 
       - path: /
@@ -19,7 +19,7 @@ spec:
   tls:
   - secretName: tls-prod-cert
     hosts:
-    - authentication.columbusecosystem.com
-    - cdrive.columbusecosystem.com
-    - api.cdrive.columbusecosystem.com
-    - notebook.columbusecosystem.com
+    - <authentication_hostname>
+    - <cdrive_hostname>
+    - <cdrive_api_hostname>
+    - <registry_hostname>

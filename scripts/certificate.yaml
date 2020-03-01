@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: tls-prod-cert
+  namespace: default
+spec:
+  secretName: tls-prod-cert
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - <authentication_hostname>
+  - <cdrive_hostname>
+  - <api_hostname>
+  - <registry_hostname>
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+      - domains:
+        - <authentication_hostname>
+        - <cdrive_hostname>
+        - <api_hostname>
+        - <registry_hostname>

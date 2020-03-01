@@ -25,7 +25,7 @@ spec:
               name: cdrive-data
           envFrom:
             - configMapRef:
-                name: cdrive-env
+                name: cdrive
       volumes:
         - name: cdrive-data
           persistentVolumeClaim:

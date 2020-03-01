@@ -20,4 +20,4 @@ spec:
               containerPort: 8080
           envFrom:
             - configMapRef:
-                name: app-manager-env
+                name: app-manager

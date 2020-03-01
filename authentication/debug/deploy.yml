@@ -25,8 +25,8 @@ spec:
               name: authentication-data
           envFrom:
             - configMapRef:
-                name: authentication-env
+                name: authentication
       volumes:
         - name: authentication-data
           persistentVolumeClaim:
-            claimName: authentication-pv-claim
+            claimName: authentication

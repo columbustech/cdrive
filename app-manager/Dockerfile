@@ -1,4 +1,4 @@
-FROM golang:1.12.5
+FROM golang:1.13.8
 
 WORKDIR $GOPATH/src/github.com/kaushikc92/app-manager
 

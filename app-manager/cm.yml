@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: app-manager-env
+  name: app-manager
 data:
   AUTHENTICATION_URL: <auth_url>
   CDRIVE_URL: <cdrive_url>

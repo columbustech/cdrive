@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cdrive-env
+  name: cdrive
 data:
   AWS_ACCESS_KEY_ID: <key_id>
   AWS_SECRET_ACCESS_KEY: <secret>

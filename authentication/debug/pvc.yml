@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: authentication-pv-claim
+  name: authentication
 spec:
   accessModes:
     - ReadWriteOnce
