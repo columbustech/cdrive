@@ -19,7 +19,7 @@ For further details, visit our [homepage](https://columbustech.io).
 ## Deploy CDrive
 
 Instructions on how to deploy your own copy of CDrive can be found 
-[here](https://www.github.com/columbustech/cdrive/install.md).
+[here](https://github.com/columbustech/cdrive/blob/master/docs/install.md).
 
 ## App Store
 
