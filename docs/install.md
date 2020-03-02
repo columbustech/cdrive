@@ -163,4 +163,27 @@ Fill in the URLs in cdrive/app-manager/cm.yml and deploy the app manager
 ```
 kubectl apply -f cdrive/app-manager
 ```
+## Registry
 
+These are optional instructions to set up a private registry on the cluster. 
+
+Create an htpasswd for basic authentication
+```
+docker run --entrypoint htpasswd registry:2 -Bbn username password > ./htpasswd
+```
+
+Update URLs in cdrive/registry/values.yaml and apply it
+```
+helm install regname stable/docker-registry -f cdrive/registry/values.yaml --set secrets.htpasswd=$(cat ./htpasswd)
+```
+
+Edit kubectl default service account
+```
+kubectl edit serviceaccount default -n default
+```
+
+Add the following to the service account config
+```
+imagePullSecrets:
+- name: regname-docker-registry-secret
+```
