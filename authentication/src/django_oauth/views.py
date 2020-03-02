@@ -6,12 +6,17 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from oauth2_provider.models import Application
-import requests, re
+import requests, re, os
 
 def create_account(request):
     if request.method == 'POST':
-        username = request.POST['username']
+        if os.environ['PRIVATE_DEPLOYMENT'] == "TRUE":
+            account_creation_code = request.POST['code']
+            if account_creation_code != os.environ['ACCOUNT_CREATION_CODE']:
+                messages.error(request, "Incorrect account creation code")
+                return render(request, 'registration/create-user.html')
 
+        username = request.POST['username']
         if User.objects.filter(username=username).exists():
             messages.error(request, "Sorry, this username is already taken")
             return render(request, 'registration/create-user.html')
@@ -43,7 +48,7 @@ def create_account(request):
         requests.post(url='http://cdrive/register-user/', data=data)
 
         cdrive_url = Application.objects.filter(name='CDrive')[0].redirect_uris
-        return redirect(cdrive_url)
+        return render(request, 'registration/create-success.html', {'cdrive_url': cdrive_url})
 
     elif request.method == 'GET':
         return render(request, 'registration/create-user.html')

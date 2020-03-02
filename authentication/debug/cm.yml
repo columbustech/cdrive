@@ -4,3 +4,5 @@ metadata:
   name: authentication
 data:
   CDRIVE_URL: <cdrive_url>
+  PRIVATE_DEPLOYMENT: "TRUE"
+  ACCOUNT_CREATION_CODE: ""
