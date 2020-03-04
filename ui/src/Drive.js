@@ -26,6 +26,9 @@ class Drive extends React.Component {
     this.uploadFile = this.uploadFile.bind(this);
     this.presignedUpload = this.presignedUpload.bind(this);
     this.completeUpload = this.completeUpload.bind(this);
+    this.fileInput = React.createRef();
+    this.onUploadButtonClick = this.onUploadButtonClick.bind(this);
+    this.handleUploadFromButton = this.handleUploadFromButton.bind(this);
     this.deleteHandler = this.deleteHandler.bind(this);
     this.downloadHandler = this.downloadHandler.bind(this);
     this.shareHandler = this.shareHandler.bind(this);
@@ -105,7 +108,9 @@ class Drive extends React.Component {
     const cookies = new Cookies();
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const data = new FormData();
-    if(file.path.charAt(0) === '/') {
+    if(!file.path) {
+      data.append('path', this.state.path + '/' + file.name);
+    } else if(file.path.charAt(0) === '/') {
       data.append('path', this.state.path + file.path);
     } else {
       data.append('path', this.state.path + '/' + file.path);
@@ -133,6 +138,14 @@ class Drive extends React.Component {
         uploadPromise = this.uploadFile(file);
       }
     }
+  }
+  onUploadButtonClick() {
+    this.fileInput.current.click();
+  }
+  handleUploadFromButton(e) {
+    e.preventDefault();
+    console.log(this.fileInput.current.files);
+    this.handleUpload(this.fileInput.current.files);
   }
   deleteHandler(e, index) {
     e.preventDefault();
@@ -308,7 +321,8 @@ class Drive extends React.Component {
       menuItems = (
         <ul className="menu-list">
           <li className="menu-list-item">
-            <button style={{marginLeft: 10, width: 150}} type="button" className="btn btn-primary" >
+            <input type="file" ref={this.fileInput} style={{display: "none"}} onChange={this.handleUploadFromButton} multiple/>
+            <button style={{marginLeft: 10, width: 150}} type="button" className="btn btn-primary" onClick={this.onUploadButtonClick} >
               Upload
             </button>
           </li>
