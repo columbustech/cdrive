@@ -36,3 +36,20 @@ td {
 .drive-container::-webkit-scrollbar {
   display: None
 }
+.upload-status-container {
+  position: absolute;
+  width: 60%;
+  height: 100px;
+  bottom: 0px;
+  background-color: #DEDEDE;
+}
+.upload-progress {
+  margin-top: 20px;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 10px;
+}
+.upload-message {
+  margin-left: auto;
+  margin-right: auto;
+}

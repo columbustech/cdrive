@@ -20,10 +20,12 @@ class Drive extends React.Component {
       shareObject: null,
       showNewFolderModal: false,
       showShareModal: false,
+      uploadStatus: {}
     };
     this.getDriveObjects = this.getDriveObjects.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
+    this.updateUpload = this.updateUpload.bind(this);
     this.presignedUpload = this.presignedUpload.bind(this);
     this.completeUpload = this.completeUpload.bind(this);
     this.fileInput = React.createRef();
@@ -82,9 +84,20 @@ class Drive extends React.Component {
     });
     return request.then(
       response => {
+        this.setState({
+          uploadStatus: {}
+        });
         this.getDriveObjects(this.state.path);
       },
     );
+  }
+  updateUpload(progressEvent) {
+    this.setState({
+      uploadStatus: {
+        percentage: (progressEvent.loaded/progressEvent.total)*100,
+        filename: this.state.uploadStatus.filename
+      }
+    });
   }
   presignedUpload(file, url, fields) {
     const data = new FormData();
@@ -96,10 +109,9 @@ class Drive extends React.Component {
       method: 'POST',
       url: url,
       data: data,
-      onUploadProgress: function (progressEvent) {
-      }
+      onUploadProgress: this.updateUpload
     });
-     return request.then(
+    return request.then(
       response => {
       },
     );
@@ -115,6 +127,12 @@ class Drive extends React.Component {
     } else {
       data.append('path', path + '/' + file.path);
     }
+    this.setState({
+      uploadStatus: {
+        percentage: 0,
+        filename: file.name
+      }
+    });
     const request = axios({
       method: 'POST',
       url: window.location.protocol + "//api." + window.location.hostname + "/initiate-upload-alt/",
@@ -337,6 +355,21 @@ class Drive extends React.Component {
       );
     }
 
+    let uploadContainer;
+    if (Object.keys(this.state.uploadStatus).length !== 0) {
+      uploadContainer = (
+        <div className="upload-status-container">
+          <div className="upload-progress">
+            <div className="progress">
+              <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style={{width: `${this.state.uploadStatus.percentage}%`}}>
+              </div>
+            </div> 
+          </div>
+          <div className="upload-message text-center">Uploading {this.state.uploadStatus.filename} ({`${this.state.uploadStatus.percentage.toFixed(1)}%`}) ...</div>
+        </div>
+      );
+    }
+
     return(
       <Dropzone onDrop={acceptedFiles => this.handleUpload(acceptedFiles, 0)} noClick noKeyboard>
         {({getRootProps, getInputProps}) => (
@@ -356,6 +389,7 @@ class Drive extends React.Component {
             <NewFolderModal show={this.state.showNewFolderModal} toggleModal={this.toggleNewFolderModal} getDriveObjects={this.getDriveObjects} path={this.state.path} >
             </NewFolderModal>
             <ShareModal show={this.state.showShareModal} toggleModal={this.toggleShareModal} shareObject={this.state.shareObject} username={this.props.username} path={this.state.path} />
+            {uploadContainer}
           </div>
         )}
       </Dropzone>
