@@ -104,16 +104,16 @@ class Drive extends React.Component {
       },
     );
   }
-  uploadFile(file) {
+  uploadFile(file, path) {
     const cookies = new Cookies();
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const data = new FormData();
     if(!file.path) {
-      data.append('path', this.state.path + '/' + file.name);
+      data.append('path', path + '/' + file.name);
     } else if(file.path.charAt(0) === '/') {
-      data.append('path', this.state.path + file.path);
+      data.append('path', path + file.path);
     } else {
-      data.append('path', this.state.path + '/' + file.path);
+      data.append('path', path + '/' + file.path);
     }
     const request = axios({
       method: 'POST',
@@ -131,11 +131,12 @@ class Drive extends React.Component {
   }
   handleUpload(acceptedFiles) {
     let uploadPromise;
+    var path = this.state.path;
     for (const file of acceptedFiles) {
       if (uploadPromise) {
-        uploadPromise = uploadPromise.then(() => this.uploadFile(file));
+        uploadPromise = uploadPromise.then(() => this.uploadFile(file, path));
       } else {
-        uploadPromise = this.uploadFile(file);
+        uploadPromise = this.uploadFile(file, path);
       }
     }
   }
