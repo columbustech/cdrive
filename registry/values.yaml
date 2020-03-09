@@ -1,3 +1,6 @@
+secrets:
+  htpasswd: |-
+    <registry_username>:<registry_basic_auth_token>
 ingress:
   enabled: true
   hosts:
@@ -10,3 +13,6 @@ ingress:
     - secretName: tls-prod-cert
       hosts:
       - <registry_hostname>
+persistence:
+  enabled: true
+  existingClaim: registry
