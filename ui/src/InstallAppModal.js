@@ -55,7 +55,7 @@ class InstallAppModal extends React.Component {
     });
     request.then(
         response => {
-          if(response.data.appStatus === "Running") {
+          if(response.data.appStatus === "Available") {
             clearInterval(this.state.installAppPollId);
             this.setState({
               isAppInstalling: false

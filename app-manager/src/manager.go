@@ -376,6 +376,44 @@ func deleteAppStorageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getAppStatus(username string, appName string) string {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	pods, err := clientset.CoreV1().Pods("default").List(metav1.ListOptions{
+		LabelSelector: "name=" + appName + "-" + username,
+	})
+
+	if items := pods.Items; len(items) == 0 {
+		fmt.Println("Missing")
+		return "Missing"
+	} else if items[0].DeletionTimestamp != nil {
+		return "Terminating"
+	} else if statuses := items[0].Status.ContainerStatuses; len(statuses) == 0 {
+		return "Missing"
+	} else if v := statuses[0].State; v.Running != nil {
+		diff := metav1.Now().Time.Sub(v.Running.StartedAt.Time)
+		if int(diff.Seconds()) > 3 {
+			return "Available"
+		} else {
+			return "Ready"
+		}
+	} else if v.Waiting != nil && (v.Waiting.Reason == "ErrImagePull" || v.Waiting.Reason=="ImagePullBackOff") {
+		return "Error"
+	} else if v.Terminated != nil {
+		return "Terminated"
+	} else {
+		return "Missing"
+	}
+}
+
 type AppStatus struct {
 	Status string `json:"appStatus"`
 }
@@ -387,17 +425,10 @@ func getAppStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	if isAppRunning(username, appName) {
-		app_status := AppStatus{
-			Status: "Running",
-		}
-		json.NewEncoder(w).Encode(app_status)
-	} else {
-		app_status := AppStatus{
-			Status: "Missing",
-		}
-		json.NewEncoder(w).Encode(app_status)
+	app_status := AppStatus{
+		Status: getAppStatus(username, appName),
 	}
+	json.NewEncoder(w).Encode(app_status)
 }
 
 func int32Ptr(i int32) *int32 { return &i }

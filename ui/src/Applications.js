@@ -11,16 +11,17 @@ class AppItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpening: false,
-      openAppPollId: 0,
+      isProcessing: false,
+      processingPollId: 0,
     }
     this.openApp = this.openApp.bind(this);
-    this.openAppPoll = this.openAppPoll.bind(this);
+    this.appStatusPoll = this.appStatusPoll.bind(this);
+    this.deleteApp = this.deleteApp.bind(this);
   }
-  openApp(event) {
-    event.preventDefault();
+  openApp(e) {
+    e.preventDefault();
     this.setState({
-      isOpening:true,
+      isProcessing:true
     });
 
     const data = new FormData();
@@ -36,12 +37,36 @@ class AppItem extends React.Component {
     request.then(
       response => {
         this.setState({
-          openAppPollId: setInterval(() => this.openAppPoll(), 1000)
+          processingPollId: setInterval(() => this.appStatusPoll("open"), 1000)
         });
       }
     );
   }
-  openAppPoll() {
+  deleteApp() {
+    this.setState({
+      isProcessing:true
+    });
+    const data = new FormData();
+    data.append('app_name', this.props.appName);
+    const cookies = new Cookies();
+    let auth_header = 'Bearer ' + cookies.get('columbus_token');
+    const request = axios({
+      method: 'POST',
+      url: window.location.protocol + "//api." + window.location.hostname + "/delete-application/",
+      data: data,
+      headers: {'Authorization': auth_header}
+    });
+    request.then(
+      response => {
+        this.setState({
+          processingPollId: setInterval(() => this.appStatusPoll("delete"), 1000)
+        });
+      },
+      err => {
+      }
+    );
+  }
+  appStatusPoll(action) {
     const cookies = new Cookies();
     var auth_header = 'Bearer ' + cookies.get('columbus_token');
     const request = axios({
@@ -51,12 +76,18 @@ class AppItem extends React.Component {
     });
     request.then(
         response => {
-          if (response.data.appStatus === "Running") {
-            clearInterval(this.state.openAppPollId);
+          if (action === "open" && response.data.appStatus === "Available") {
+            clearInterval(this.state.processingPollId);
             this.setState({
-              isOpening: false
+              isProcessing: false
             });
             window.location.href = window.location.protocol + "//" + window.location.hostname + "/app/" + this.props.username + "/" + this.props.appName + "/";
+          } else if(action === "delete" && response.data.appStatus === "Missing") {
+            clearInterval(this.state.processingPollId);
+            this.setState({
+              isProcessing: false
+            });
+            this.props.refreshApps();
           }
         },
         err => {
@@ -66,7 +97,7 @@ class AppItem extends React.Component {
   }
   render() {
     let appItem;
-    if (this.state.isOpening) {
+    if (this.state.isProcessing) {
       appItem =
         <div>
           <Button variant="link" onClick={this.openApp} >{this.props.appName}</Button>
@@ -80,7 +111,21 @@ class AppItem extends React.Component {
           <Button variant="link" onClick={this.openApp} >{this.props.appName}</Button>
         </div>
     }
-    return appItem;
+    return(
+      <tr key={this.props.key} >
+        <td>
+          {appItem}
+        </td>
+        <td>
+          <DropdownButton variant="transparent" 
+            title="" alignRight >
+            <Dropdown.Item onClick={() => this.deleteApp()}>
+              Delete
+            </Dropdown.Item>
+          </DropdownButton>
+        </td>
+      </tr>
+    );
  }
 }
 
@@ -90,11 +135,10 @@ class Applications extends React.Component {
     this.state = {
       applications: [],
       showInstallAppDialog: false,
-    }
+    };
     this.handleInstallAppClick = this.handleInstallAppClick.bind(this);
     this.toggleInstallAppDialog = this.toggleInstallAppDialog.bind(this);
     this.getApplications = this.getApplications.bind(this);
-    this.deleteApp = this.deleteApp.bind(this);
   }
   componentDidMount() {
     this.getApplications();
@@ -117,25 +161,6 @@ class Applications extends React.Component {
       response => {
         this.setState({applications: response.data});
       },
-    );
-  }
-  deleteApp(appName) {
-    const data = new FormData();
-    data.append('app_name', appName);
-    const cookies = new Cookies();
-    let auth_header = 'Bearer ' + cookies.get('columbus_token');
-    const request = axios({
-      method: 'POST',
-      url: window.location.protocol + "//api." + window.location.hostname + "/delete-application/",
-      data: data,
-      headers: {'Authorization': auth_header}
-    });
-    request.then(
-      response => {
-        this.getApplications();
-      },
-      err => {
-      }
     );
   }
   render() {
@@ -164,17 +189,7 @@ class Applications extends React.Component {
     }
     let rows
     rows = this.state.applications.map((app, i) => (
-      <tr key={i}>
-        <td><AppItem appName={app.name} appUrl={app.url} username={this.props.username}/></td>
-        <td>
-          <DropdownButton variant="transparent" 
-            title="" alignRight >
-            <Dropdown.Item onClick={() => this.deleteApp(app.name)}>
-              Delete
-            </Dropdown.Item>
-          </DropdownButton>
-        </td>
-      </tr>
+      <AppItem appName={app.name} appUrl={app.url} username={this.props.username} key={i} refreshApps={this.getApplications} />
     ));
     return(
       <div className="drive-container app-container" >

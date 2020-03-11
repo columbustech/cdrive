@@ -1,6 +1,6 @@
 FROM golang:1.13.8
 
-WORKDIR $GOPATH/src/github.com/kaushikc92/app-manager
+WORKDIR $GOPATH/src/github.com/columbustech/app-manager
 
 COPY ./app-manager ./
 
