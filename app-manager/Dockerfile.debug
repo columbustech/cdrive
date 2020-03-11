@@ -11,6 +11,7 @@ ENV GO111MODULE=on
 
 WORKDIR /go/src/github.com/columbustech/app-manager
 
-COPY . .
+COPY src .
 
-CMD ["sh", "-c", "/bin/bash"]
+EXPOSE 8080
+CMD ["sh", "-c", "tail -f /dev/null"]

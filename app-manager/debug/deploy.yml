@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app-manager
-          image: "docker.io/columbustech/app-manager:latest"
+          image: "docker.io/columbustech/app-manager:dev"
           ports:
             - name: http
               containerPort: 8080
