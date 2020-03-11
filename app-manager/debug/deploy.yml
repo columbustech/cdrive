@@ -15,6 +15,7 @@ spec:
       containers:
         - name: app-manager
           image: "docker.io/columbustech/app-manager:dev"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
