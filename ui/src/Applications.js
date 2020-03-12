@@ -160,7 +160,12 @@ class Applications extends React.Component {
     request.then(
       response => {
         this.setState({applications: response.data});
-      },
+      }, err => {
+        if(err.response.status === 401) {
+          cookies.remove('columbus_token');
+          window.location.reload(false);
+        }
+      }
     );
   }
   render() {

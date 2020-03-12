@@ -68,7 +68,12 @@ class Drive extends React.Component {
           permission: response.data.permission,
           path: path
         });
-      },
+      }, err => {
+        if(err.response.status === 401) {
+          cookies.remove('columbus_token');
+          window.location.reload(false);
+        }
+      }
     );
   }
   completeUpload(uploadId) {
