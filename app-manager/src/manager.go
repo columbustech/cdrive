@@ -405,7 +405,7 @@ func getAppStatus(username string, appName string) string {
 		} else {
 			return "Ready"
 		}
-	} else if v.Waiting != nil && (v.Waiting.Reason == "ErrImagePull" || v.Waiting.Reason=="ImagePullBackOff") {
+	} else if v.Waiting != nil && (v.Waiting.Reason == "ErrImagePull" || v.Waiting.Reason=="ImagePullBackOff" || v.Waiting.Reason=="CrashLoopBackOff") {
 		return "Error"
 	} else if v.Terminated != nil {
 		return "Terminated"
