@@ -15,15 +15,6 @@ git clone https://www.github.com/columbustech/cdrive.git
 
 ## TLS Certificates
 
-Create a TLS certificate issuer
-
-Edit cluster-issuer.yaml by entering your email in the email field. The file is located at scripts/cluster-issuer.yaml.
-And then create the cluster issuer:
-
-```bash
-kubectl apply -f cdrive/scripts/letsencrypt-prod.yaml
-```
-
 Install Cert Manager for issuing TLS certificates
 
 ```bash
@@ -46,6 +37,15 @@ helm repo update
 helm install cert-manager-name --namespace cert-manager jetstack/cert-manager \
 --set ingressShim.defaultIssuerName=letsencrypt-prod \
 --set ingressShim.defaultIssuerKind=ClusterIssuer
+```
+
+Create a TLS certificate issuer
+
+Edit cluster-issuer.yaml by entering your email in the email field. The file is located at scripts/cluster-issuer.yaml.
+And then create the cluster issuer:
+
+```bash
+kubectl apply -f cdrive/scripts/letsencrypt-prod.yaml
 ```
 
 ## Ingress Controller
