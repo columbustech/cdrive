@@ -19,7 +19,7 @@ Install Cert Manager for issuing TLS certificates
 
 ```bash
 # Install the CustomResourceDefinition resources separately
-kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.14.0/cert-manager.crds.yaml
 
 # Create the namespace for cert-manager
 kubectl create namespace cert-manager
@@ -34,9 +34,15 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 # Install the cert-manager Helm chart
-helm install cert-manager-name --namespace cert-manager jetstack/cert-manager \
+helm install cert-manager --namespace cert-manager jetstack/cert-manager --version v0.14.0 \
 --set ingressShim.defaultIssuerName=letsencrypt-prod \
 --set ingressShim.defaultIssuerKind=ClusterIssuer
+```
+
+Check that webhook pod is running correctly (May take a couple of minutes for the pod to start)
+
+```bash
+kubectl get pods -n cert-manager
 ```
 
 Create a TLS certificate issuer
