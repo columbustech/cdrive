@@ -167,7 +167,7 @@ kubectl create clusterrolebinding default-cluster-admin --clusterrole=cluster-ad
 Fill in the URLs in cdrive/app-manager/cm.yml and deploy the app manager
 
 ```
-kubectl apply -f cdrive/app-manager
+kubectl apply -f cdrive/app-manager/prod
 ```
 ## Registry
 
