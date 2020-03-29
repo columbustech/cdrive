@@ -51,7 +51,7 @@ Edit cluster-issuer.yaml by entering your email in the email field. The file is 
 And then create the cluster issuer:
 
 ```bash
-kubectl apply -f cdrive/scripts/letsencrypt-prod.yaml
+kubectl apply -f cdrive/scripts/cluster-issuer.yaml
 ```
 
 ## Ingress Controller
