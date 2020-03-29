@@ -67,7 +67,7 @@ helm install nginx-ingress --namespace kube-system stable/nginx-ingress
 Get external IP for the ingress controller (May show 'pending' for a few minutes)
 
 ```
-kubectl -n kube-system get svc ingress-nginx-controller
+kubectl -n kube-system get svc nginx-ingress-controller
 ```
 
 Possible issue: Services don't get allocated an external IP. External IP gets stuck in 'pending' state.
