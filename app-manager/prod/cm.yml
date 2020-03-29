@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: app-manager
 data:
-  AUTHENTICATION_URL: https://authentication.col4infa.io/
-  CDRIVE_URL: https://col4infa.io/
-  CDRIVE_API_URL: https://api.col4infa.io/
-  CDRIVE_DOMAIN: col4infa.io
+  AUTHENTICATION_URL: <auth_url>
+  CDRIVE_URL: <cdrive_url>
+  CDRIVE_API_URL: <cdrive_api_url>
+  CDRIVE_DOMAIN: <domain_name>
