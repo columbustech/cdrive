@@ -10,7 +10,7 @@ def introspect_token(request):
     try:
         data = jwt.decode(token, settings.COLUMBUS_CLIENT_SECRET, algorithms='HS256')
         cDriveUser = CDriveUser.objects.filter(username=data['username'])[0]
-        cDriveApp = CDriveApplication.objects.filter(name=data['app_name'])[0]
+        cDriveApp = CDriveApplication.objects.filter(name=data['app_name'], owner=data['username'])[0]
         return cDriveUser, cDriveApp
     except jwt.ExpiredSignatureError:
         pass
