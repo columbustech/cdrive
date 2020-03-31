@@ -96,6 +96,30 @@ class AppTokenView(APIView):
         token = jwt.encode(data, settings.COLUMBUS_CLIENT_SECRET, algorithm='HS256')
         return Response({'app_token': token}, status=status.HTTP_200_OK)
 
+class ApiAccessTokenView(APIView):
+    parser_class = (JSONParser,)
+
+    @csrf_exempt
+    def post(self, request):
+        if not "username" in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if not "password" in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        data = {
+            "username": request.data["username"],
+            "password": request.data["password"]
+        }
+        response = requests.post(url="http://authentication/authenticate/", data=data)
+        if response.status_code != 200:
+            return Response(status=response.status_code)
+        token_data = {
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+            "username": request.data["username"],
+            "app_name": "cdrive"
+        }
+        token = jwt.encode(token_data, settings.COLUMBUS_CLIENT_SECRET, algorithm="HS256")
+        return Response({"accessToken": token}, status=status.HTTP_200_OK)
+
 class LogoutView(APIView):
     parser_class = (JSONParser,)
 

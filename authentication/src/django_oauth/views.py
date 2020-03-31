@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
@@ -52,6 +53,21 @@ def create_account(request):
 
     elif request.method == 'GET':
         return render(request, 'registration/create-user.html')
+
+@method_decorator(csrf_exempt)
+def authenticate_user(request):
+    if request.method == 'POST':
+        if not "username" in request.POST:
+            return HttpResonse(status=400)
+        if not "password" in request.POST:
+            return HttpResponse(status=400)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return JsonResponse({'message': 'success'}, status=200)
+        else:
+            return JsonResponse({'message': 'failed'}, status=401)
 
 @method_decorator(csrf_exempt)
 def register_application(request):
