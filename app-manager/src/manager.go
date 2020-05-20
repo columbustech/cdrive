@@ -177,6 +177,14 @@ func startApp(imagePath string, username string, appName string, clientId string
 									Name:  "AUTHENTICATION_URL",
 									Value: os.Getenv("AUTHENTICATION_URL"),
 								},
+								{
+									Name: "APP_NAME",
+									Value: appName,
+								},
+								{
+									Name: "APP_URL",
+									Value: os.Getenv("CDRIVE_URL") + "app/" + username + "/" + appName + "/",
+								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{
 								{
