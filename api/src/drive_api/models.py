@@ -33,6 +33,7 @@ class FilePermission(models.Model):
     PERMISSIONS = (
         ('V', 'View'),
         ('E', 'Edit'),
+        ('D', 'Downstream'),
     )
     cdrive_file = models.ForeignKey('CDriveFile', on_delete=models.CASCADE, related_name='%(class)s_file')
     user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
@@ -43,6 +44,7 @@ class FolderPermission(models.Model):
     PERMISSIONS = (
         ('V', 'View'),
         ('E', 'Edit'),
+        ('D', 'Downstream'),
     )
     cdrive_folder = models.ForeignKey('CDriveFolder', on_delete=models.CASCADE, related_name='%(class)s_folder')
     user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
@@ -53,6 +55,7 @@ class HostedServiceFilePermission(models.Model):
     PERMISSIONS = (
         ('V', 'View'),
         ('E', 'Edit'),
+        ('D', 'Downstream'),
     )
     cdrive_file = models.ForeignKey('CDriveFile', on_delete=models.CASCADE, related_name='%(class)s_file')
     user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')
@@ -63,6 +66,7 @@ class HostedServiceFolderPermission(models.Model):
     PERMISSIONS = (
         ('V', 'View'),
         ('E', 'Edit'),
+        ('D', 'Downstream'),
     )
     cdrive_folder = models.ForeignKey('CDriveFolder', on_delete=models.CASCADE, related_name='%(class)s_folder')
     user = models.ForeignKey('user_mgmt.CDriveUser', on_delete=models.CASCADE, related_name='%(class)s_user')

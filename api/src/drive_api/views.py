@@ -312,8 +312,12 @@ class ListView(APIView):
 
         if check_permission(parent, cDriveUser, cDriveApp, 'E'):
             data['permission'] = 'Edit'
-        else: 
+        elif check_permission(parent, cDriveUser, cDriveApp, 'V'): 
             data['permission'] = 'View'
+        elif check_permission(parent, cDriveUser, cDriveApp, 'D'):
+            data['permission'] = 'None'
+        else:
+            return Response({'message': 'Such a folder does not exist or you do not have permission to view contents of this folder'}, status=status.HTTP_403_FORBIDDEN)
         
         data['driveObjects'] = []
         folders = CDriveFolder.objects.filter(parent=parent)
@@ -327,8 +331,8 @@ class ListView(APIView):
                 ser['permission'] = 'View'
                 ser['type'] = 'Folder'
                 data['driveObjects'].append(ser)
-            elif check_child_permission(f, cDriveUser, cDriveApp):
-                ser['permission'] = 'View'
+            elif check_permission(f, cDriveUser, cDriveApp, 'D'):
+                ser['permission'] = 'None'
                 ser['type'] = 'Folder'
                 data['driveObjects'].append(ser)
 
@@ -358,7 +362,7 @@ class ListRecursiveView(APIView):
         folder = get_object_by_path(path)
         if folder is None :
             return Response(status=status.HTTP_403_FORBIDDEN)
-        if not (check_permission(folder, cDriveUser, cDriveApp, 'V') or check_child_permission(folder, cDriveUser, cDriveApp)):
+        if not check_permission(folder, cDriveUser, cDriveApp, 'D'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         data = {}
         data['driveObjects'] = serialize_folder_recursive(folder, cDriveUser, cDriveApp, path)

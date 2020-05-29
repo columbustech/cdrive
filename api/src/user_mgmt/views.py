@@ -21,7 +21,7 @@ class UserDetailsView(APIView):
     def get(self, request, format=None):
         user, app = introspect_token(request)
         if user is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         else :
             serializer = CDriveUserSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -34,9 +34,10 @@ def initialize_user_drive(cDriveUser):
         owner = cDriveUser
     )
     cDriveApp.save()
+    share_object(home_folder, cDriveUser, cDriveApp, 'D')
 
 def check_folder_permission(cDriveFolder, cDriveUser, cDriveApp, permission):
-    if permission == 'V' and cDriveFolder.is_public:
+    if permission != 'E'  and cDriveFolder.is_public:
         return True
     else: 
         if cDriveApp.__class__.__name__ == 'CDriveApplication':
@@ -53,7 +54,7 @@ def check_folder_permission(cDriveFolder, cDriveUser, cDriveApp, permission):
                 permission = permission).exists()
 
 def check_file_permission(cDriveFile, cDriveUser, cDriveApp, permission):
-    if permission == 'V' and cDriveFile.is_public:
+    if permission != 'E' and cDriveFile.is_public:
         return True
     else:
         if cDriveApp.__class__.__name__ == 'CDriveApplication':
@@ -85,27 +86,16 @@ def check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, permission):
 def check_permission(cDriveObject, cDriveUser, cDriveApp, permission):
     if cDriveUser is None or cDriveApp is None or cDriveObject is None:
         return False
-    if cDriveObject.owner == cDriveUser and cDriveApp.name == 'cdrive':
+    elif cDriveObject.owner == cDriveUser and cDriveApp.name == 'cdrive':
         return True
-    if check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, 'E'):
+    elif check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, 'E'):
         return True
-    if permission == 'V' and check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, 'V'):
+    elif permission != 'E' and check_permission_recursive(cDriveObject, cDriveUser, cDriveApp, 'V'):
         return True
-    return False
-
-def check_child_permission(cDriveFolder, cDriveUser, cDriveApp):
-    files = CDriveFile.objects.filter(parent=cDriveFolder)
-    for f in files:
-        if (check_file_permission(f, cDriveUser, cDriveApp, 'E')
-            or check_file_permission(f, cDriveUser, cDriveApp, 'V')):
-            return True
-    folders = CDriveFolder.objects.filter(parent=cDriveFolder)
-    for f in folders:
-        if (check_folder_permission(f, cDriveUser, cDriveApp, 'E')
-            or check_folder_permission(f, cDriveUser, cDriveApp, 'V')
-            or check_child_permission(f, cDriveUser, cDriveApp)):
-            return True
-    return False
+    elif permission == 'D' and cDriveObject.__class__.__name__ == 'CDriveFolder' and check_folder_permission(cDriveObject, cDriveUser, cDriveApp, 'D'):
+        return True
+    else: 
+        return False
 
 def delete_folder(cDriveFolder):
     CDriveFile.objects.filter(parent=cDriveFolder).delete()
@@ -117,40 +107,68 @@ def delete_folder(cDriveFolder):
 def share_object(cdrive_object, target_user, target_app, permission):
     if ((cdrive_object.__class__.__name__ == 'CDriveFile')
         and (target_app.__class__.__name__ == 'CDriveApplication')):
-        file_permission = FilePermission(
-            cdrive_file = cdrive_object,
-            user = target_user,
-            app = target_app,
-            permission = permission
-        )
-        file_permission.save()
+        if FilePermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission=permission).exists():
+            return
+        elif permission == 'V' and FilePermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission='E').exists():
+            return
+        else:
+            file_permission = FilePermission(
+                cdrive_file = cdrive_object,
+                user = target_user,
+                app = target_app,
+                permission = permission
+            )
+            file_permission.save()
     elif ((cdrive_object.__class__.__name__ == 'CDriveFile')
         and (target_app.__class__.__name__ == 'HostedService')):
-        file_permission = HostedServiceFilePermission(
-            cdrive_file = cdrive_object,
-            user = target_user,
-            service = target_app,
-            permission = permission
-        )
-        file_permission.save()
+        if HostedServiceFilePermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission=permission).exists():
+            return
+        elif permission == 'V' and HostedServiceFilePermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission='E').exists():
+            return
+        else:
+            file_permission = HostedServiceFilePermission(
+                cdrive_file = cdrive_object,
+                user = target_user,
+                service = target_app,
+                permission = permission
+            )
+            file_permission.save()
     elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
         and (target_app.__class__.__name__ == 'CDriveApplication')):
-        folder_permission = FolderPermission(
-            cdrive_folder = cdrive_object,
-            user = target_user,
-            app = target_app,
-            permission = permission
-        )
-        folder_permission.save()
+        if FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission=permission).exists():
+            return
+        elif permission == 'D' and FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app).exists():
+            return
+        elif permission == 'V' and FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission='E').exists():
+            return
+        else:
+            folder_permission = FolderPermission(
+                cdrive_folder = cdrive_object,
+                user = target_user,
+                app = target_app,
+                permission = permission
+            )
+            folder_permission.save()
+            if cdrive_object.parent is not None:
+                share_object(cdrive_object, target_user, target_app, 'D')
     elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
         and (target_app.__class__.__name__ == 'HostedService')):
-        folder_permission = FolderPermission(
-            cdrive_folder = cdrive_object,
-            user = target_user,
-            service = target_app,
-            permission = permission
-        )
-        folder_permission.save()
+        if HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission=permission).exists():
+            return
+        elif permission == 'D' and HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app).exists():
+            return
+        elif permission == 'V' and HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission='E').exists():
+            return
+        else:
+            folder_permission = HostedServiceFolderPermission(
+                cdrive_folder = cdrive_object,
+                user = target_user,
+                service = target_app,
+                permission = permission
+            )
+            folder_permission.save()
+            if cdrive_object.parent is not None:
+                share_object(cdrive_object, target_user, target_app, 'D')
 
 def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app, cdrive_path):
     data = []
@@ -169,7 +187,7 @@ def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app, cdrive_pa
             ser['path'] = cdrive_path + '/' + f.name
             ser['children'] = serialize_folder_recursive(f, cdrive_user, cdrive_app, cdrive_path + '/' + f.name)
             data.append(ser)
-        elif check_child_permission(f, cdrive_user, cdrive_app):
+        elif check_permission(f, cdrive_user, cdrive_app, 'D'):
             ser['permission'] = 'None'
             ser['type'] = 'Folder'
             ser['path'] = cdrive_path + '/' + f.name
