@@ -137,9 +137,9 @@ def share_object(cdrive_object, target_user, target_app, permission):
         and (target_app.__class__.__name__ == 'CDriveApplication')):
         if FolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, app=target_app, permission=permission).exists():
             return
-        elif permission == 'D' and FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app).exists():
+        elif permission == 'D' and FolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, app=target_app).exists():
             return
-        elif permission == 'V' and FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission='E').exists():
+        elif permission == 'V' and FolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, app=target_app, permission='E').exists():
             return
         else:
             folder_permission = FolderPermission(
@@ -155,9 +155,9 @@ def share_object(cdrive_object, target_user, target_app, permission):
         and (target_app.__class__.__name__ == 'HostedService')):
         if HostedServiceFolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, service=target_app, permission=permission).exists():
             return
-        elif permission == 'D' and HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app).exists():
+        elif permission == 'D' and HostedServiceFolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, service=target_app).exists():
             return
-        elif permission == 'V' and HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission='E').exists():
+        elif permission == 'V' and HostedServiceFolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, service=target_app, permission='E').exists():
             return
         else:
             folder_permission = HostedServiceFolderPermission(
