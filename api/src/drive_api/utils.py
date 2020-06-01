@@ -135,7 +135,7 @@ def share_object(cdrive_object, target_user, target_app, permission):
             file_permission.save()
     elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
         and (target_app.__class__.__name__ == 'CDriveApplication')):
-        if FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app, permission=permission).exists():
+        if FolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, app=target_app, permission=permission).exists():
             return
         elif permission == 'D' and FolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, app=target_app).exists():
             return
@@ -150,10 +150,10 @@ def share_object(cdrive_object, target_user, target_app, permission):
             )
             folder_permission.save()
             if cdrive_object.parent is not None:
-                share_object(cdrive_object, target_user, target_app, 'D')
+                share_object(cdrive_object.parent, target_user, target_app, 'D')
     elif ((cdrive_object.__class__.__name__ == 'CDriveFolder')
         and (target_app.__class__.__name__ == 'HostedService')):
-        if HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app, permission=permission).exists():
+        if HostedServiceFolderPermission.objects.filter(cdrive_folder=cdrive_object, user=target_user, service=target_app, permission=permission).exists():
             return
         elif permission == 'D' and HostedServiceFolderPermission.objects.filter(cdrive_file=cdrive_object, user=target_user, service=target_app).exists():
             return
@@ -168,7 +168,7 @@ def share_object(cdrive_object, target_user, target_app, permission):
             )
             folder_permission.save()
             if cdrive_object.parent is not None:
-                share_object(cdrive_object, target_user, target_app, 'D')
+                share_object(cdrive_object.parent, target_user, target_app, 'D')
 
 def serialize_folder_recursive(cdrive_folder, cdrive_user, cdrive_app, cdrive_path):
     data = []
