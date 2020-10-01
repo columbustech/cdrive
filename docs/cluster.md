@@ -35,7 +35,7 @@ export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 ```
 aws s3api create-bucket --bucket prefix-example-com-state-store --region us-east-1
-export KOPS_STATE_STORE=prefix-example-com-state-store
+export KOPS_STATE_STORE=s3://prefix-example-com-state-store
 ```
 
 ## Register a domain on AWS
