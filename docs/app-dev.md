@@ -16,7 +16,7 @@ CDrive apps are web applications running inside a docker container. Apps can exp
 
 ## Pushing an app to an image registry
 
-Once an app has been built, it can be pushed to a public image registry such as Docker Hub or Google Container Registry or it can be pushed to a private registry. CDrive deployment instructions contains optional steps for deploying a private image registry on CDrive.
+Once an app has been built, it can be pushed to a public image registry such as Docker Hub or Google Container Registry or it can be pushed to a private registry. CDrive [deployment instructions](https://github.com/columbustech/cdrive/blob/master/docs/install.md#registry) contains optional steps for deploying a private image registry on CDrive.
 
 Let's say you created an app image named my-cdrive-app on your local machine with the following command:
 
