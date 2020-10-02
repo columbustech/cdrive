@@ -21,6 +21,14 @@ For further details, visit our [homepage](https://columbustech.io).
 Instructions on how to deploy your own copy of CDrive can be found 
 [here](https://github.com/columbustech/cdrive/blob/master/docs/install.md).
 
+## User Guide
+
+Instructions on how to use CDrive can be found [here](https://github.com/columbustech/cdrive/blob/master/docs/user-guide.md).
+
+## App Developer Guide
+
+Instructions on how to develop apps for CDrive can be found [here](https://github.com/columbustech/cdrive/blob/master/docs/app-dev.md).
+
 ## App Store
 
 Our [app store page](https://columbustech.io/appstore) contains detailed information about currently available apps as well as upcoming ones.  
