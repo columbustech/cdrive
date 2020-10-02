@@ -2,7 +2,7 @@
 
 ## Writing an app
 
-CDrive apps are web applications running inside a docker container. Apps can expose a GUI or a REST API or both. Ideally apps should expose both so that userscan run the apps through the browser or any of CDrive's programmatic interfaces.
+CDrive apps are web applications running inside a docker container. Apps can expose a GUI or a REST API or both. Ideally apps should expose both so that users can run the apps through the browser or any of CDrive's programmatic interfaces.
 
 ### Specifications for writing an app
 
