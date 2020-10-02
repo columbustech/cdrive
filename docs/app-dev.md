@@ -10,7 +10,7 @@ CDrive apps are web applications running inside a docker container. Apps can exp
 2. The image should expose the GUI and/or REST API on port 8000 of the container
 3. GUI should be on the path /app/\<user\_name\>/\<app\_name\>/
 4. REST API should be on the path /app/\<user\_name\>/\<app\_name\>/api/
-5. The app should use the Oauth service provided by CDrive to authenticate users. The details for this can be found here.
+5. The app should use the Oauth service provided by CDrive to authenticate users.
 6. Apps can use Kubernetes REST API to create their own resources on the Kubernetes cluster for different purposes such as scaling up execution
 7. Once you have built the app on your local machine, you can follow the steps in the next section to push it to a private or public image registry.
 
