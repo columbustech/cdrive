@@ -2,7 +2,7 @@
 
 ## Writing an app
 
-CDrive apps are web applications running inside a docker container. Apps can expose a GUI or a REST API or both. Ideally apps should expose both so that userscan run the apps through the browser or any of CDrive's programmatic interfaces.
+CDrive apps are web applications running inside a docker container. Apps can expose a GUI or a REST API or both. Ideally apps should expose both so that users can run the apps through the browser or any of CDrive's programmatic interfaces.
 
 ### Specifications for writing an app
 
@@ -10,13 +10,13 @@ CDrive apps are web applications running inside a docker container. Apps can exp
 2. The image should expose the GUI and/or REST API on port 8000 of the container
 3. GUI should be on the path /app/\<user\_name\>/\<app\_name\>/
 4. REST API should be on the path /app/\<user\_name\>/\<app\_name\>/api/
-5. The app should use the Oauth service provided by CDrive to authenticate users. The details for this can be found here.
+5. The app should use the Oauth service provided by CDrive to authenticate users.
 6. Apps can use Kubernetes REST API to create their own resources on the Kubernetes cluster for different purposes such as scaling up execution
 7. Once you have built the app on your local machine, you can follow the steps in the next section to push it to a private or public image registry.
 
 ## Pushing an app to an image registry
 
-Once an app has been built, it can be pushed to a public image registry such as Docker Hub or Google Container Registry or it can be pushed to a private registry. CDrive deployment instructions contains optional steps for deploying a private image registry on CDrive.
+Once an app has been built, it can be pushed to a public image registry such as Docker Hub or Google Container Registry or it can be pushed to a private registry. CDrive [deployment instructions](https://github.com/columbustech/cdrive/blob/master/docs/install.md#registry) contains optional steps for deploying a private image registry on CDrive.
 
 Let's say you created an app image named my-cdrive-app on your local machine with the following command:
 
