@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'input-form.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'create-user.css' %}">
     <title>Columbus</title>
 </head>
@@ -18,40 +16,47 @@ integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6ji
 integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <div class="right-panel">
+  <div class="page">
+    <div class="create-user-container">
       <form class="form-signin" action="{% url 'create_account' %}" method="post">
-          {% csrf_token %}
-          <h1 class="h4 mb-3 font-weight-normal">Create Columbus Account</h1>
-          <label for="id_code" class="sr-only">Account Creation Code</label>
-          <input type="text" id="id_code" name="code" class="form-control" placeholder="Account Creation Code" required="" autofocus="">
-          <label for="id_username" class="sr-only">Username</label>
-          <input type="text" id="id_username" name="username" class="form-control" placeholder="Username" required="" autofocus="">
-          <label for="id_firstname" class="sr-only">First Name</label>
-          <input type="text" id="id_firstname" name="firstname" class="form-control" placeholder="First Name" required="" autofocus="">
-          <label for="lastname" class="sr-only">Last Name</label>
-          <input type="text" id="id_lastname" name="lastname" class="form-control" placeholder="Last Name" required="" autofocus="">
-          <label for="id_email" class="sr-only">Email</label>
-          <input type="email" id="id_email" name="email" class="form-control" placeholder="Email" required="" autofocus="">
-          <label for="id_password" class="sr-only">Password</label>
-          <input type="password" id="id_password" name="password" class="form-control" placeholder="Password" required="">
-          <label for="id_confirm" class="sr-only">Confirm Password</label>
-          <input type="password" id="id_confirm" name="confirm" class="form-control" placeholder="Confirm Password" required="">
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-          {% if messages %}
-            <div class="message-container" >
-              {% for message in messages %}
-                <div class="{{ message.tags }}">
-                  {{ message }}
-              </div>
-              {% endfor %}
-            </div>
-          {% endif %}
+      {% csrf_token %}
+      <div class="h4" style="font-weight:400; margin-top:30px; margin-bottom: 20px; font-family: sans-serif"> Create your Columbus Account</div>
+      <div class="inputs-container">
+        <div class="input-text-container" style="width:200px; float:left;">
+	  <label>First name</label>
+	  <input type="text" name="firstname" class="input-text-field" autocomplete="off"/>
+        </div>
+        <div class="input-text-container" style="width:200px; float:right;">
+	  <label>Last name</label>
+	  <input type="text" name="lastname" class="input-text-field" autocomplete="off"/>
+        </div>
+        <div class="input-text-container" style="width:420px; float:left;">
+	  <label>Email</label>
+	  <input type="email" name="email" class="input-text-field" autocomplete="off"/>
+        </div>
+        <div class="input-text-container" style="width:420px; float:left;">
+	  <label>Account creation code</label>
+	  <input type="text" name="code" class="input-text-field" autocomplete="off" />
+        </div>
+        <div class="input-text-container" style="width:420px; float:left;">
+	  <label>Username</label>
+	  <input type="text" name="username" class="input-text-field" autocomplete="off"/>
+        </div>
+        <div class="input-text-container" style="width:200px; float:left;">
+	  <label>Password</label>
+	  <input type="password" name="password" class="input-text-field" />
+        </div>
+        <div class="input-text-container" style="width:200px; float:right;">
+	  <label>Confirm</label>
+	  <input type="password" name="confirm" class="input-text-field" />
+        </div>
+	<div class="text-center">
+	  <button type="submit" class="btn btn-primary mt-3" style="width:150px">Create</button>
+	</div>
+      </div>
       </form>
     </div>
-    <div class="left-panel">
-      <h1 class="h2" style="margin-top: 100px; color: #004085;" >Welcome to Columbus!</h1>
-    </div>
-
+  </div>
 </body>
 
 </html>
