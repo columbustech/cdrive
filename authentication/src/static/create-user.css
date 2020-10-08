@@ -15,7 +15,7 @@ body {
   width: 80%;
   max-width: 800px;
   min-width: 500px;
-  height: 480px;
+  height: 530px;
   border: 1px solid #DADCE0;
   border-radius: 5px;
 }
@@ -23,7 +23,7 @@ body {
   padding: 10px;
   border: 1px solid #DADCE0;
   border-radius: 5px;
-  margin: 10px;
+  margin: 20px 10px 2px 10px;
   height: 40px;
 }
 .input-text-container>label{
@@ -56,4 +56,16 @@ body {
   width: 440px;
   margin-left: auto;
   margin-right: auto;
+}
+.form-message {
+  font-family: sans-serif;
+  font-size: 13px;
+  height: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.error-message {
+  color: red;
 }

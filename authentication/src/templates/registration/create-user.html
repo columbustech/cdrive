@@ -20,7 +20,14 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
     <div class="create-user-container">
       <form class="form-signin" action="{% url 'create_account' %}" method="post">
       {% csrf_token %}
-      <div class="h4" style="font-weight:400; margin-top:30px; margin-bottom: 20px; font-family: sans-serif"> Create your Columbus Account</div>
+      <div class="h4" style="font-weight:400; margin-top:30px; font-family: sans-serif"> Create your Columbus Account</div>
+      <div class="form-message error-message">
+        {% if messages %}
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        {% endif %}
+      </div>
       <div class="inputs-container">
         <div class="input-text-container" style="width:200px; float:left;">
 	  <label>First name</label>
@@ -42,6 +49,9 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 	  <label>Username</label>
 	  <input type="text" name="username" class="input-text-field" autocomplete="off"/>
         </div>
+	<div class="form-message" style="float:left;">
+	  Username can consist of lower case letters and numbers
+	</div>
         <div class="input-text-container" style="width:200px; float:left;">
 	  <label>Password</label>
 	  <input type="password" name="password" class="input-text-field" />
@@ -50,6 +60,9 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 	  <label>Confirm</label>
 	  <input type="password" name="confirm" class="input-text-field" />
         </div>
+	<div class="form-message" style="float:left;">
+	  Password should contain at least 6 characters
+	</div>
 	<div class="text-center">
 	  <button type="submit" class="btn btn-primary mt-3" style="width:150px">Create</button>
 	</div>
