@@ -110,15 +110,8 @@ func startApp(imagePath string, username string, appName string, clientId string
 			panic(err)
 		}
 		fmt.Printf("Created pvc %q.\n", pvcResult.GetObjectMeta().GetName())
-	}
-	/*
-		else if err != nil {
-			panic(err.Error())
-		}
-	*/
-	fmt.Printf("PVC Status %s.\n", pvcResult.Status.Phase)
-	for pvcResult.Status.Phase != "Bound" {
-		pvcResult, _ = clientset.CoreV1().PersistentVolumeClaims("default").Get(appName+"-"+username, metav1.GetOptions{})
+	} else if err != nil {
+		panic(err.Error())
 	}
 
 	deploymentsClient := clientset.AppsV1().Deployments(apiv1.NamespaceDefault)
@@ -238,11 +231,9 @@ func startApp(imagePath string, username string, appName string, clientId string
 		},
 	}
 	serviceResult, err := servicesClient.Create(service)
-	/*
-		if err != nil {
-			panic(err)
-		}
-	*/
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("Created service %q.\n", serviceResult.GetObjectMeta().GetName())
 
 	ingressClient := clientset.ExtensionsV1beta1().Ingresses(apiv1.NamespaceDefault)
@@ -284,12 +275,10 @@ func startApp(imagePath string, username string, appName string, clientId string
 		},
 	}
 	ingressResult, err := ingressClient.Create(ingress)
-	/*
-		if err != nil {
-			panic(err)
-		}
-	*/
-	fmt.Printf("Created service %q.\n", ingressResult.GetObjectMeta().GetName())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created ingress %q.\n", ingressResult.GetObjectMeta().GetName())
 }
 
 func stopAppHandler(w http.ResponseWriter, r *http.Request) {
