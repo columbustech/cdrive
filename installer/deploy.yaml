@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdrive-installer
+spec:
+  selector:
+    matchLabels:
+      name: cdrive-installer
+  template:
+    metadata:
+      labels:
+        name: cdrive-installer
+    spec:
+      containers:
+        - name: cdrive-installer
+          image: "docker.io/columbustech/cdrive-installer"
+          imagePullPolicy: Always
