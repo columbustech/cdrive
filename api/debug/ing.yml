@@ -1,22 +1,28 @@
-apiVersion: networking.k8s.io/v1beta1 
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: cdrive
   annotations:
-    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: “true”
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
 spec:
+  ingressClassName: nginx
   rules:
   - host: <cdrive_api_hostname>
     http:
       paths: 
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: cdrive 
-          servicePort: 8000
+          service:
+            name: cdrive 
+            port: 
+              number: 8000
   tls:
   - secretName: tls-prod-cert
     hosts:
     - <cdrive_api_hostname>
-

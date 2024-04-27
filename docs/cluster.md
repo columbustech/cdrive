@@ -20,6 +20,8 @@ AmazonRoute53FullAccess
 AmazonS3FullAccess
 IAMFullAccess
 AmazonVPCFullAccess
+AmazonSQSFullAccess
+AmazonEventBridgeFullAccess
 ```
 
 You can create this IAM user from the aws console or from the command line. On creating a user, you get an AWS access

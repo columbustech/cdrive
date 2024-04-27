@@ -15,39 +15,9 @@ git clone https://www.github.com/columbustech/cdrive.git
 
 ## TLS Certificates
 
-Install Cert Manager for issuing TLS certificates
+Install Cert Manager by following these [instructions](https://cert-manager.io/docs/installation)
 
-```bash
-# Install the CustomResourceDefinition resources separately
-kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.14.0/cert-manager.crds.yaml
-
-# Create the namespace for cert-manager
-kubectl create namespace cert-manager
-
-# Label the cert-manager namespace to disable resource validation
-kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-
-# Add the Jetstack Helm repository
-helm repo add jetstack https://charts.jetstack.io
-
-# Update your local Helm chart repository cache
-helm repo update
-
-# Install the cert-manager Helm chart
-helm install cert-manager --namespace cert-manager jetstack/cert-manager --version v0.14.0 \
---set ingressShim.defaultIssuerName=letsencrypt-prod \
---set ingressShim.defaultIssuerKind=ClusterIssuer
-```
-
-Check that webhook pod is running correctly (May take a couple of minutes for the pod to start)
-
-```bash
-kubectl get pods -n cert-manager
-```
-
-Create a TLS certificate issuer
-
-Edit cluster-issuer.yaml by entering your email in the email field. The file is located at scripts/cluster-issuer.yaml.
+Create a TLS certificate issuer by editing cluster-issuer.yaml by entering your email in the email field. The file is located at scripts/cluster-issuer.yaml.
 And then create the cluster issuer:
 
 ```bash
@@ -56,42 +26,12 @@ kubectl apply -f cdrive/scripts/cluster-issuer.yaml
 
 ## Ingress Controller
 
-Install Nginx Ingress Controller
+Install Nginx Ingress Controller by following these [instructions](https://docs.nginx.com/nginx-ingress-controller/installation/installing-nic/installation-with-helm/)
 
-```
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm repo update
-helm install nginx-ingress --namespace kube-system stable/nginx-ingress
-```
-
-Get external IP for the ingress controller (May show 'pending' for a few minutes)
+Get external IP for the ingress controller (May show 'pending' for a few minutes). For example, if the ingress controller is deployed in the kube-system namespace and is named nginx-ingress-controller :
 
 ```
 kubectl -n kube-system get svc nginx-ingress-controller
-```
-
-Possible issue: Services don't get allocated an external IP. External IP gets stuck in 'pending' state.
-Can be fixed by adding the following to your Kops cluster config.
-
-```
-spec:
-  additionalPolicies:
-    master: |
-      [
-        {
-          "Effect": "Allow",
-          "Action": "iam:CreateServiceLinkedRole",
-          "Resource": "arn:aws:iam::*:role/aws-service-role/*"
-         },
-         {
-           "Effect": "Allow",
-           "Action": [
-             "ec2:DescribeAccountAttributes",
-             "ec2:DescribeInternetGateways"
-            ],
-           "Resource": "*"
-         }
-      ]
 ```
 
 ## DNS Records
@@ -101,7 +41,7 @@ and registry.example.com. Point these alias records to the external IP of the in
 
 ## Authentication
 
-Add your CDrive URL (https://example.com/) to cdrive/authentication/debug/cm.yml. Then run the following commands.
+Add your CDrive URL (https://example.com/) to cdrive/authentication/debug/cm.yml. Update cdrive/authentication/debug/ing.yml with the correct hostnames and urls. Then run the following commands.
 
 ```
 kubectl apply -f cdrive/authentication/debug
@@ -126,6 +66,7 @@ Redirect uris: https://example.com/
 ```
 
 Note the client id and client secret.
+Now, log out of admin account.
 
 ## CDrive
 
@@ -164,7 +105,7 @@ Set appropriate permissions on the Kubernetes default service account
 kubectl create clusterrolebinding default-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:default
 ```
 
-Fill in the URLs in cdrive/app-manager/cm.yml and deploy the app manager
+Fill in the URLs in cdrive/app-manager/prod/cm.yml and deploy the app manager
 
 ```
 kubectl apply -f cdrive/app-manager/prod

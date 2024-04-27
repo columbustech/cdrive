@@ -1,25 +1,30 @@
-apiVersion: networking.k8s.io/v1beta1 
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: authentication
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: “true”
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
 spec:
+  ingressClassName: nginx
   rules:
-  - host: <authentication_hostname>
+  - host: <authentication_hostname> 
     http:
       paths: 
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: authentication
-          servicePort: 8000
+          service:
+            name: authentication
+            port:
+              number: 8000
   tls:
   - secretName: tls-prod-cert
     hosts:
     - <authentication_hostname>
     - <cdrive_hostname>
     - <cdrive_api_hostname>
-    - <registry_hostname>
